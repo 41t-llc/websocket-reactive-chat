@@ -1,0 +1,85 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WebSocket</title>
+    <style>
+    body {
+      background-color: #333;
+      color: #fff;
+      font-size: 25px;
+      font-family: monospace;
+      margin: 0;
+      height: 100%;
+    }
+    body * {
+      margin: 0;
+      padding: 0;
+    }
+    .grid {
+      display: grid;
+    }
+    body.grid.grid-row-2 {
+      grid-template-rows: 1fr 30px;
+    }
+    .grid.grid-col-3 {
+      grid-template-columns: 220px 1fr 80px;
+    }
+    article.grid.grid-col-3 > *:first-child {
+      text-align: right;
+    }
+    #chat {
+      overflow-y: auto;
+    }
+    </style>
+  </head>
+  <body class="grid grid-row-2">
+    <section id="chat">
+      <article class="grid grid-col-3"></article>
+    </section>
+    <form name="message" class="grid grid-col-3">
+      <input name="user" placeholder="Username">
+      <input name="text" placeholder="Message">
+      <button>Отправить</button>
+    </form>
+    <script>
+      let HOST = location.origin.replace(/^http/, 'ws'),
+          ws = new WebSocket(HOST),
+          chat = document.querySelector("#chat");
+
+      ws.onopen = function() {
+        chat.innerHTML += `<article class="grid grid-col-3"><b>Система:</b><span>cоединение установлено</span><br></article>`;
+      };
+
+      ws.onclose = function(event) {
+        if (event.wasClean) {
+          chat.innerHTML += `<article class="grid grid-col-3"><b>Система:</b><span>cоединение закрыто</span><br></article>`;
+        } else {
+          chat.innerHTML += `<article class="grid grid-col-3"><b>Система:</b><span>соединения как-то закрыто</span><br></article>`;
+        }
+        chat.innerHTML += `<article class="grid grid-col-3"><b>Система:</b><span>код: ${event.code} причина: ${event.reason}</span><br></article>`;
+      };
+
+      ws.onmessage = function(event) {
+        let message = JSON.parse(event.data);
+        chat.innerHTML += `<article class="grid grid-col-3"><b>${message.user}:</b><span>${message.text}</span><i>${message.date}</i></article>`;
+      };
+
+      ws.onerror = function(event) {
+        chat.innerHTML += `<article class="grid grid-col-3"><b>Система:</b><span>ошибка ${event.message}</span><br></article>`;
+      };
+
+      document.forms["message"].onsubmit = function() {
+        let message = {
+              user: this.user.value,
+              text: this.text.value,
+              date: new Date().toLocaleTimeString().substring(0,5)
+            };
+        ws.send(JSON.stringify(message));
+        return false;
+      }
+
+    </script>
+  </body>
+</html>
