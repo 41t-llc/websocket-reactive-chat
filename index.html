@@ -32,6 +32,17 @@
     #chat {
       overflow-y: auto;
     }
+    @media screen and (max-width: 568px){
+      body{
+        font-size: 14px;
+      }
+      .grid.grid-col-3{
+        grid-template-columns: 100px 1fr 60px;
+      }
+      form[name="message"] > button {
+        font-size: 14px;
+      }
+    }
     </style>
   </head>
   <body class="grid grid-row-2">
@@ -41,7 +52,7 @@
     <form name="message" class="grid grid-col-3">
       <input name="user" placeholder="Username">
       <input name="text" placeholder="Message">
-      <button>Отправить</button>
+      <button>Send</button>
     </form>
     <script>
       let HOST = location.origin.replace(/^http/, 'ws'),
@@ -64,6 +75,7 @@
       ws.onmessage = function(event) {
         let message = JSON.parse(event.data);
         chat.innerHTML += `<article class="grid grid-col-3"><b>${message.user}:</b><span>${message.text}</span><i>${message.date}</i></article>`;
+        document.getElementById("chat").scrollTop =   document.getElementById("chat").scrollHeight;
       };
 
       ws.onerror = function(event) {
@@ -71,13 +83,21 @@
       };
 
       document.forms["message"].onsubmit = function() {
-        let message = {
-              user: this.user.value,
-              text: this.text.value,
-              date: new Date().toLocaleTimeString().substring(0,5)
-            };
-        ws.send(JSON.stringify(message));
-        return false;
+        if (this.text.value != "" && this.user.value != ""){
+          let message = {
+                user: this.user.value,
+                text: this.text.value,
+                date: new Date().toLocaleTimeString().substring(0,5)
+              };
+              this.text.value = "";
+          ws.send(JSON.stringify(message));
+
+        }
+        else {
+          this.text.focus();
+
+        }
+           return false;
       }
 
     </script>
