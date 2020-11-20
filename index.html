@@ -7,7 +7,7 @@
     <style>
     body {
       background-color: #333;
-      color: #fff;
+      color: #ccc;
       font-size: 25px;
       font-family: monospace;
       margin: 0;
@@ -28,9 +28,30 @@
     }
     article.grid.grid-col-3 > *:first-child {
       text-align: right;
+      color: #0a0;
+    }
+    article.grid.grid-col-3 > *:last-child {
+      text-align: center;
+      color: #999;
+    }
+    .grid.gap {
+      gap: 5px;
     }
     #chat {
       overflow-y: auto;
+    }
+    form[name="message"] > * {
+      background-color: #000;
+      color: #fff;
+      border: 1px solid #555;
+    }
+    form[name="message"] > button:hover,
+    form[name="message"] > button:focus {
+      background-color: #0a0;
+    }
+    form[name="message"] > *:hover,
+    form[name="message"] > *:focus {
+      border-color: #0a0;
     }
     @media screen and (max-width: 568px){
       body{
@@ -39,15 +60,12 @@
       .grid.grid-col-3{
         grid-template-columns: 100px 1fr 60px;
       }
-      form[name="message"] > button {
-        font-size: 14px;
-      }
     }
     </style>
   </head>
   <body class="grid grid-row-2">
     <section id="chat">
-      <article class="grid grid-col-3"></article>
+      <article class="grid grid-col-3 gap"></article>
     </section>
     <form name="message" class="grid grid-col-3">
       <input name="user" placeholder="Username">
@@ -60,26 +78,26 @@
           chat = document.querySelector("#chat");
 
       ws.onopen = function() {
-        chat.innerHTML += `<article class="grid grid-col-3"><b>Система:</b><span>cоединение установлено</span><br></article>`;
+        chat.innerHTML += `<article class="grid grid-col-3 gap"><b>Система:</b><span>cоединение установлено</span><br></article>`;
       };
 
       ws.onclose = function(event) {
         if (event.wasClean) {
-          chat.innerHTML += `<article class="grid grid-col-3"><b>Система:</b><span>cоединение закрыто</span><br></article>`;
+          chat.innerHTML += `<article class="grid grid-col-3 gap"><b>Система:</b><span>cоединение закрыто</span><br></article>`;
         } else {
-          chat.innerHTML += `<article class="grid grid-col-3"><b>Система:</b><span>соединения как-то закрыто</span><br></article>`;
+          chat.innerHTML += `<article class="grid grid-col-3 gap"><b>Система:</b><span>соединения как-то закрыто</span><br></article>`;
         }
-        chat.innerHTML += `<article class="grid grid-col-3"><b>Система:</b><span>код: ${event.code} причина: ${event.reason}</span><br></article>`;
+        chat.innerHTML += `<article class="grid grid-col-3 gap"><b>Система:</b><span>код: ${event.code} причина: ${event.reason}</span><br></article>`;
       };
 
       ws.onmessage = function(event) {
         let message = JSON.parse(event.data);
-        chat.innerHTML += `<article class="grid grid-col-3"><b>${message.user}:</b><span>${message.text}</span><i>${message.date}</i></article>`;
+        chat.innerHTML += `<article class="grid grid-col-3 gap"><b>${message.user}:</b><span>${message.text}</span><i>${message.date}</i></article>`;
         document.getElementById("chat").scrollTop =   document.getElementById("chat").scrollHeight;
       };
 
       ws.onerror = function(event) {
-        chat.innerHTML += `<article class="grid grid-col-3"><b>Система:</b><span>ошибка ${event.message}</span><br></article>`;
+        chat.innerHTML += `<article class="grid grid-col-3 gap"><b>Система:</b><span>ошибка ${event.message}</span><br></article>`;
       };
 
       document.forms["message"].onsubmit = function() {
