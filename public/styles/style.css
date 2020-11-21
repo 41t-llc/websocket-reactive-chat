@@ -1,0 +1,114 @@
+body {
+  background-color: #333;
+  color: #ccc;
+  font-size: 25px;
+  font-family: monospace;
+  margin: 0;
+  height: 100%;
+}
+
+body * {
+  margin: 0;
+  padding: 0;
+}
+
+.grid {
+  display: grid;
+}
+
+body.grid.grid-row-2 {
+  grid-template-rows: 1fr 30px;
+}
+
+.grid.grid-col-3 {
+  grid-template-columns: 220px 1fr 80px;
+}
+
+article.grid.grid-col-3 > *:first-child {
+  text-align: right;
+  color: #0a0;
+}
+
+article.grid.grid-col-3 > *:last-child {
+  text-align: center;
+  color: #999;
+}
+
+.grid.gap {
+  gap: 5px;
+}
+
+#chat {
+  overflow-y: auto;
+}
+
+form[name="message"] > * {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+form[name="message"] > button:hover,
+form[name="message"] > button:focus {
+  background-color: #0a0;
+}
+
+form[name="message"] > *:hover,
+form[name="message"] > *:focus {
+  border-color: #0a0;
+}
+
+form[name="message"],
+#chat {
+  display: none;
+}
+form[name="signin"] {
+  margin: auto;
+  border-radius: 15px;
+  padding: 25px;
+  color: #0a0;
+  background-color: #111;
+  box-shadow: 0 0 15px #0a05;
+}
+
+form[name="signin"] > button {
+  background-color: #000;
+  border:none;
+  padding: 5px;
+  color: #eee;
+  border-radius: 3px;
+  transition: .1s;
+}
+
+form[name="signin"] > button:hover,
+form[name="signin"] > button:focus {
+  background-color: #0a0;
+}
+
+form[name="signin"] > label,
+form[name="signin"] > h3  {
+  margin: 0 auto;
+}
+
+form[name="signin"] > label,
+form[name="signin"] > input {
+  color: #fff;
+  background-color: #111;
+  border: 2px solid #111;
+  font-size:16px;
+}
+
+form[name="signin"] > *:hover,
+form[name="signin"] > *:focus {
+  border-color: #0a0;
+}
+
+@media screen and (max-width: 568px){
+  body {
+    font-size: 14px;
+  }
+
+  .grid.grid-col-3 {
+    grid-template-columns: 100px 1fr 60px;
+  }
+}
