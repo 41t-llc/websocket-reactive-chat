@@ -5,48 +5,48 @@ let HOST = "ws://localhost:3000";//location.origin.replace(/^http/, 'ws'),
     user = "",
     users = [
       {
-      login: "admin",
+      login: "user1",
       password: "111"
       },
       {
-      login: "user",
-      password: "123"
+      login: "user2",
+      password: "222"
       },
       {
-      login: "user1",
+      login: "user3",
+      password: "333"
+      },
+      {
+      login: "user4",
       password: "444"
-      },
-      {
-      login: "arara",
-      password: "123"
       }
     ];
 ws.onopen = function() {
-  condition.querySelector("[name='indicator']").classList.add("success");
-  condition.querySelector("[name='indicator']").classList.remove("error");
-  condition.querySelector("[name='sysmes']").innerHTML = "Соединение установлено";
+  condition.querySelector("#indicator").classList.add("success");
+  condition.querySelector("#indicator").classList.remove("error");
+  condition.querySelector("#sysmes").innerHTML = "Соединение установлено";
 };
 
 ws.onclose = function(event) {
-  condition.querySelector("[name='indicator']").classList.add("error");
-  condition.querySelector("[name='indicator']").classList.remove("success");
+  condition.querySelector("#indicator").classList.add("error");
+  condition.querySelector("#indicator").classList.remove("success");
 
   if (event.wasClean) {
-      condition.querySelector("[name='sysmes']").innerHTML = "Соединение закрыто: <br>";
+      condition.querySelector("#sysmes").innerHTML = "Соединение закрыто: <br>";
   } else {
-      condition.querySelector("[name='sysmes']").innerHTML = "Соединения как-то закрыто <br>";
+      condition.querySelector("#sysmes").innerHTML = "Соединения как-то закрыто <br>";
   }
-    condition.querySelector("[name='sysmes']").innerHTML += `<i>код: ${event.code} причина: ${event.reason}</i>`;
+    condition.querySelector("#sysmes").innerHTML += `<i>код: ${event.code} причина: ${event.reason}</i>`;
 };
 
 ws.onmessage = function(event) {
   let message = JSON.parse(event.data),
-  childer = chat.children;
+  children = chat.children;
 
-  if(childer.length > 0) {
-    last_children = childer[(childer.length - 1)]
-    if(last_children.children[0].innerText == message.user) {
-        last_children.children[1].innerHTML += `<article class="message grid gap-15"> <i>${message.date}</i><span>${message.text}<span></article>`;
+  if(children.length > 0) {
+    lastChild = children[(children.length - 1)]
+    if(lastChild.children[0].innerText == message.user) {
+        lastChild.children[1].innerHTML += `<article class="message grid gap-15"> <i>${message.date}</i><span>${message.text}<span></article>`;
       } else{
         chat.innerHTML += `<article class="user_message mymsgs"><p>${message.user}</p><article class="items grid gap"><article class="message grid gap-15"> <i>${message.date}</i><span>${message.text}</article></article>`;
       }
@@ -58,9 +58,9 @@ ws.onmessage = function(event) {
 };
 
 ws.onerror = function(event) {
-  condition.querySelector("[name='indicator']").classList.add("error");
-  condition.querySelector("[name='indicator']").classList.remove("success");
-  condition.querySelector("[name='sysmes']").innerHTML = `<b>Система:</b>ошибка ${event.message}`;
+  condition.querySelector("#indicator").classList.add("error");
+  condition.querySelector("#indicator").classList.remove("success");
+  condition.querySelector("#indicator").innerHTML = `<b>Система:</b>ошибка ${event.message}`;
 };
 
 document.forms["message"].onsubmit = function() {
@@ -82,10 +82,10 @@ document.forms["message"].onsubmit = function() {
 
 document.forms["signin"].onsubmit = function () {
   if (this.login.value != "" && this.password.value != "") {
-    for (i = 0; i < users.length;i++) {
+    for (i = 0; i < users.length; i++) {
       if (this.login.value == users[i].login && this.password.value == users[i].password) {
         user = this.login.value;
-        document.forms["message"].querySelector("[name='user_name']").innerHTML = `<b> ${user} </b>`;
+        document.forms["message"].querySelector("#user_name").innerHTML = `<b>${user}</b>`;
         this.style.display = "none";
         document.forms["message"].style.display = "grid";
         chat.style.display = 'block';
@@ -99,7 +99,7 @@ document.forms["signin"].onsubmit = function () {
   return false;
 }
 
-document.querySelector("[name='theme']").onclick = function () {
+document.querySelector("#themeSwitch").onclick = () => {
   document.body.classList.toggle("white");
   document.body.classList.toggle("black");
 }

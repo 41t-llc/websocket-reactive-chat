@@ -5,7 +5,7 @@
 body.black {
   --body-bgc: #333;
   --main-color: #fff;
-  --ff: 25px;
+  --fz: 25px;
   --gap: 5px;
   --msg-bgc: #777;
   --msg-color: #eee;
@@ -21,7 +21,7 @@ body.black {
 body.white {
   --body-bgc: #fff;
   --main-color: #000;
-  --ff: 25px;
+  --fz: 25px;
   --gap: 5px;
   --msg-bgc: #eee;
   --bord-bottom-color: #333;
@@ -32,13 +32,13 @@ body.white {
   --ind-color-success: #3E8D22;
   --ind-color-error: #E20020;
   --user_name-c: #2062E2;
-  --user_name-bgc: #E9EFFf;
+  --user_name-bgc: #E9Efff;
 }
 
 body {
   color: var(--main-color);
   background-color: var(--body-bgc);
-  font-size: var(-ff);
+  font-size: var(-fz);
   margin: auto 20%;
   height: 100%;
   transition: .1s;
@@ -49,7 +49,12 @@ body * {
   padding: 0;
   font-family: 'Montserrat', sans-serif;
 }
-
+.p {
+  padding: 10px;
+}
+.m {
+  margin: 10px;
+}
 .grid {
   display: grid;
 }
@@ -78,7 +83,7 @@ body * {
 }
 
 body.grid.grid-row-3 {
-  grid-template-rows:50px 1fr calc(30px + 5%);
+  grid-template-rows: 50px 1fr 40px;
 }
 
 .grid.grid-col-3 {
@@ -100,26 +105,15 @@ body.grid.grid-row-3 {
   gap: 30px;
 }
 
-
-
-.dark_mode:hover {
-  background: #eee;
-}
-
-.dark_mode:hover .dark_mode svg ,
-.dark_mode:hover .dark_mode  path {
-  stroke: red;
-  fill: red;
-}
-
-
-
 /* Блок с сообщениями
 ========================================== */
-
-.chat {
-  margin-top: 42px;
-  padding-right: 30px;
+#themeSwitch {
+  background-color: transparent;
+  border: none;
+}
+#themeSwitch:hover {
+  background-color: #0003;
+  border: none;
 }
 
 .user_message {
@@ -140,10 +134,13 @@ body.grid.grid-row-3 {
 
 .user_message .items > .message > i {
   margin-right: 22px;
+  margin-top: calc(var(--fz) - 14px);
   vertical-align: top;
   font-size: 14px;
+  align-self: start;
   font-weight: 500;
   opacity: .3;
+
 }
 
 .user_message .items > .message > span {
@@ -157,22 +154,27 @@ body.grid.grid-row-3 {
 
 #chat {
   overflow-y: auto;
-    border-bottom: 0.5px dotted var(--bord-bottom-color);
+  padding: 10px;
 }
+
 #condition {
-  height: 85px;
-  border-bottom: 0.5px dotted var(--bord-bottom-color);
+  border-bottom: 1px dotted var(--bord-bottom-color);
 }
-p[name="sysmes"] {
+form[name="message"] {
+    border-top: 1px dotted var(--bord-bottom-color);
+}
+
+#sysmes {
   margin: auto 0;
   text-align: left;
 }
-p[name="sysmes"] > i {
+
+#sysmes > i {
   color: var(--color-date);
   font-size: 10px;
 }
 
-span[name="indicator"] {
+#indicator {
   margin: auto;
   text-align: right;
   padding: 8px;
@@ -192,10 +194,6 @@ span[name="indicator"] {
   box-shadow: 0 0 8px var(--ind-color-error);
 }
 
-form[name="message"] {
-  margin-bottom: 5%;
-}
-
 form[name="message"] > * {
   background-color: var(--msg-bgc);
   color: var(--msg-color);
@@ -204,7 +202,7 @@ form[name="message"] > * {
   border-radius: 10px;
 }
 
-span[name='user_name'] {
+#user_name {
   background-color: var(--user_name-bgc);
   color: var(--user_name-c);
   font-size: 18px;
@@ -223,7 +221,7 @@ input[name="text"] {
 
 form[name="message"] > button,
 form[name="message"] > button {
-  padding: 14px;
+  /* padding: 14px; */
   background-color: var(--msg-btn-bgc);
   border-radius: 7px;
   transition: .1s;
@@ -283,16 +281,22 @@ form[name="signin"] > *:focus {
 
 @media screen and (max-width: 568px){
   body {
-    font-size: 14px;
+    --fz : 14px;
+  }
+  body {
     margin: 0;
     padding: 0 10px
+
   }
 
   .grid.grid-col-3 {
     grid-template-columns: 80px 1fr 50px;
 
   }
-  
+  #chat {
+    max-width: 100% - 20px;
+  }
+
   .grid.grid-col-3:first-child {
     grid-template-columns: 40px 1fr 70px;
   }
