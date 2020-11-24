@@ -19,8 +19,6 @@ wss.on('connection', ws => {
   ws.on('message', message => {
     let req = JSON.parse(message);
 
-    console.log(req);
-
     switch (req.type) {
 
       case 'msg':

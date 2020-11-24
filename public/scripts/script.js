@@ -73,7 +73,7 @@ function app() {
         chat.scrollTop = chat.scrollHeight;
         break;
 
-      case 'signin' || 'signup':
+      case ('signin' || 'signup'):
         user = message.user;
         signin.classList.add('d-n');
         signup.classList.add('d-n');
@@ -139,7 +139,6 @@ function app() {
         password: this.password.value.trim(),
         login: this.login.value.trim()
       }
-      console.log(message);
       ws.send(JSON.stringify(message))
     } else {
       alert("Проверьте данные");
