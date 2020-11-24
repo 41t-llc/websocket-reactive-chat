@@ -1,126 +1,166 @@
-let HOST = location.origin.replace(/^http/, 'ws');
-    ws = new WebSocket(HOST),
-    chat = document.querySelector("#chat"),
-    condition = document.querySelector("#condition"),
-    indicator = document.querySelector("#indicator"),
-    sysmes = document.querySelector("#sysmes"),
-    forms = document.forms;
-    user = "",
-    users = [{ // Временно
-        login: "user1",
-        password: "111"
-      }, {
-        login: "user2",
-        password: "222"
-      }, {
-        login: "user3",
-        password: "333"
-      }, {
-        login: "user4",
-        password: "444"
-    }];
-ws.onopen = function() {
-  indicator.classList.add("success");
-  indicator.classList.remove("error");
-  sysmes.innerHTML = "Соединение установлено";
-};
+function app() {
+  let HOST = location.origin.replace(/^http/, 'ws'), //'ws://localhost:3000';
+      ws = new WebSocket(HOST),
+      chat = document.querySelector('#chat'),
+      condition = document.querySelector('#condition'),
+      indicator = document.querySelector('#indicator'),
+      sysmes = document.querySelector('#sysmes'),
+      signin = document.querySelector('article.signin'),
+      signup = document.querySelector('article.signup'),
+      forms = document.forms,
+      user = {};
 
-ws.onclose = function(event) {
-  indicator.classList.add("error");
-  indicator.classList.remove("success");
+  ws.onopen = function() {
+    indicator.classList.add("success");
+    indicator.classList.remove("error");
+    sysmes.innerHTML = "Соединение установлено";
+  };
 
-  if (event.wasClean) {
-    sysmes.innerHTML = "Соединение закрыто: <br>";
-  } else {
-    sysmes.innerHTML = "Соединения как-то закрыто <br>";
-  }
-  // TODO: Нужно ли перенести в условие?
-  sysmes.innerHTML += `<i>код: ${event.code} причина: ${event.reason}</i>`;
-};
+  ws.onclose = function(event) {
+    indicator.classList.add("error");
+    indicator.classList.remove("success");
 
-ws.onmessage = function(event) {
-  let message = JSON.parse(event.data),
-  children = chat.children;
-
-  if (children.length > 0) {
-    lastChild = children[children.length - 1]
-    if (lastChild.children[0].innerText == message.user) {
-      lastChild.children[1].innerHTML += `
-          <article class="message flex ai-c grid gap-15">
-            <i>${message.date}</i>
-            <span>${message.text}</span>
-          </article>`;
+    if (event.wasClean) {
+      sysmes.innerHTML = "Соединение закрыто: <br>";
     } else {
-      chat.innerHTML += `
-          <article class="user_message mymsgs">
-            <p class="m">${message.user}</p>
-            <section class="items grid gap">
-              <article class="message flex ai-c grid gap-15">
-                <i>${message.date}</i>
-                <span>${message.text}</span>
-              </article>
-            </section>
-          </article>`;
+      sysmes.innerHTML = "Соединения как-то закрыто <br>";
     }
-  } else {
-    chat.innerHTML += `
-        <article class="user_message mymsgs">
-          <p class="m">${message.user}</p>
-          <section class="items grid gap">
-            <article class="message flex ai-c grid gap-15">
-              <i>${message.date}</i>
-              <span>${message.text}</span>
-            </article>
-          </section>
-        </article>`;
-  }
-  chat.scrollTop = chat.scrollHeight;
-};
+    // TODO: Нужно ли перенести в условие?
+    sysmes.innerHTML += `<i>код: ${event.code} причина: ${event.reason}</i>`;
+  };
 
-ws.onerror = function(event) {
-  indicator.classList.add("error");
-  indicator.classList.remove("success");
-  sysmes.innerHTML = `<b>Система:</b>ошибка ${event.message}`;
-};
+  ws.onmessage = function(event) {
+    let message = JSON.parse(event.data);
 
-forms["message"].onsubmit = function() {
-  console.log("a" + this.text.value.trim() + "a")
-  if (this.text.value != "" && this.text.value.trim() != ""){
-    let message = {
-      user: user,
-      text: this.text.value,
-      date: new Date().toLocaleTimeString().substring(0, 5)
-    };
-    this.text.value = "";
-    ws.send(JSON.stringify(message));
+    switch (message.type) {
 
-  } else {
-    this.text.focus();
-  }
-  return false;
-}
+      case 'msg':
+        let children = chat.children;
 
-forms["signin"].onsubmit = function () {
-  if (this.login.value != "" && this.password.value != "") {
-    for (i = 0; i < users.length; i++) {
-      if (this.login.value == users[i].login &&
-          this.password.value == users[i].password) {
-        user = this.login.value;
-        // forms["message"].querySelector("#user_name").innerHTML = `<b>${user}</b>`;
-        this.style.display = "none";
+        if (children.length > 0) {
+          let lastChild = children[children.length - 1];
+
+          if (lastChild.children[0].innerText == message.user.name) {
+            lastChild.children[1].innerHTML += `
+                <article class="message flex ai-c grid gap-15">
+                  <i>${message.date}</i>
+                  <span>${message.text}</span>
+                </article>`;
+          } else {
+            chat.innerHTML += `
+                <article class="user_message mymsgs">
+                  <p class="m">${message.user.name}</p>
+                  <section class="items grid gap">
+                    <article class="message flex ai-c grid gap-15">
+                      <i>${message.date}</i>
+                      <span>${message.text}</span>
+                    </article>
+                  </section>
+                </article>`;
+          }
+        } else {
+          chat.innerHTML += `
+              <article class="user_message mymsgs">
+                <p class="m">${message.user.name}</p>
+                <section class="items grid gap">
+                  <article class="message flex ai-c grid gap-15">
+                    <i>${message.date}</i>
+                    <span>${message.text}</span>
+                  </article>
+                </section>
+              </article>`;
+        }
+        chat.scrollTop = chat.scrollHeight;
+        break;
+
+      case 'signin', 'signup':
+        user = message.user;
+        signin.classList.add('d-n');
+        signup.classList.add('d-n');
+        signin.classList.remove('flex');
+        signup.classList.remove('flex');
         forms["message"].style.display = "grid";
         chat.style.display = 'block';
         break;
-      }
+
+      default:
+        // Что-то
+
     }
-    if (!user) {
-      alert("Вы не смогли авторизироваться");
+  };
+
+  ws.onerror = function(event) {
+    indicator.classList.add("error");
+    indicator.classList.remove("success");
+    sysmes.innerHTML = `<b>Система:</b>ошибка ${event.message}`;
+  };
+
+  forms["message"].onsubmit = function() {
+    if (this.text.value.trim() != "" &&
+        user.name != undefined) {
+      let message = {
+        type: 'msg',
+        user: user,
+        text: this.text.value.trim(),
+        date: new Date().toLocaleTimeString().substring(0, 5)
+      };
+
+      this.text.value = "";
+      ws.send(JSON.stringify(message));
+    } else {
+      this.text.focus();
     }
+    return false;
   }
-  return false;
+
+  forms["signin"].onsubmit = function () {
+    if (this.login.value != "" && this.password.value != "") {
+      let message = {
+        type: 'signin',
+        login: this.login.value,
+        password: this.password.value
+      };
+
+      this.password.value = '';
+      ws.send(JSON.stringify(message));
+    } else {
+      alert("Проверьте данные");
+    }
+    return false;
+  }
+
+  forms["signup"].onsubmit = function () {
+    if (this.login.value.trim() != "" &&
+        this.username.value.trim() != "" &&
+        this.password.value.trim() != "") {
+      let message = {
+        type: "signup",
+        username: this.username.value.trim(),
+        password: this.password.value.trim(),
+        login: this.login.value.trim()
+      }
+      console.log(message);
+      ws.send(JSON.stringify(message))
+    } else {
+      alert("Проверьте данные");
+    }
+    return false;
+  }
+
+  document.querySelector("#themeSwitch").onclick = () => {
+    document.body.classList.toggle("white");
+    document.body.classList.toggle("black");
+  }
 }
 
-document.querySelector("#themeSwitch").onclick = () => {
-  document.body.classList.toggle("white");
-  document.body.classList.toggle("black");
+app();
+
+function authFormSwitch() {
+  let signin = document.querySelector('article.signin'),
+      signup = document.querySelector('article.signup');
+
+  signin.classList.toggle('flex');
+  signin.classList.toggle('d-n');
+  signup.classList.toggle('flex');
+  signup.classList.toggle('d-n');
 }

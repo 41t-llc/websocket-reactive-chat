@@ -56,6 +56,21 @@ input {
   outline: none;
 }
 
+button {
+  outline: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  color: var(--msg-color);
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.d-n {
+  display: none;
+}
+
 .p {
   padding: .5em;
 }
@@ -71,7 +86,9 @@ input {
 .flex {
   display: flex;
 }
-
+.flex.flex-dir-col {
+  flex-direction: column;
+}
 .flex.jc-c,
 .grid.jc-c {
   justify-content: center;
@@ -92,7 +109,7 @@ input {
   justify-content: center;
 }
 .grid.grid-col-2 {
-  grid-template-columns: 1fr 70px;
+  grid-template-columns: 1fr 50px;
 }
 body.grid.grid-row-3 {
   grid-template-rows: 50px 1fr 60px;
@@ -264,14 +281,15 @@ form[name="message"],
   display: none;
 }
 
-form[name="signin"] {
-  margin: auto;
+form[name="signin"],
+form[name="signup"] {
   border-radius: 10px;
   padding: .5em;
   border: var(--border);
 }
 
-form[name="signin"] input {
+form[name="signin"] input,
+form[name="signup"] input {
   background-color: var(--msg-bgc);
   color: var(--msg-color);
   border: none;
@@ -279,7 +297,8 @@ form[name="signin"] input {
   border-radius: 10px;
 }
 
-form[name="signin"] > button {
+form[name="signin"] > button,
+form[name="signup"] > button {
   background-color: var(--msg-btn-bgc);
   color: var(--msg-color);
   border: none;
@@ -288,12 +307,15 @@ form[name="signin"] > button {
   transition: var(--transition);
 }
 
-body.white form[name="signin"] > button {
+body.white form[name="signin"] > button,
+body.white form[name="signup"] > button {
   color: #fff;
 }
 
 form[name="signin"] > button:hover,
-form[name="signin"] > button:focus {
+form[name="signin"] > button:focus,
+form[name="signup"] > button:hover,
+form[name="signup"] > button:focus {
   background-color: var(--msg-btn-hover-bgc);
 }
 
@@ -324,10 +346,10 @@ form[name="signin"] > button:focus {
   }
 
   .grid.grid-col-2 {
-    gap:0;
-    padding:0;
-    margin:0;
-    border:none;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
   }
   .grid.grid-col-2 > * {
     border-radius: 0;
@@ -337,6 +359,7 @@ form[name="signin"] > button:focus {
     grid-template-columns: 80px 1fr 40px;
   }
 
+  form[name="signup"] > button,
   form[name="signin"] > button,
   form[name="message"] > button {
     background-color: var(--msg-btn-hover-bgc);
