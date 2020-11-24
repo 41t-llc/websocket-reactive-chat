@@ -73,7 +73,17 @@ function app() {
         chat.scrollTop = chat.scrollHeight;
         break;
 
-      case ('signin' || 'signup'):
+      case 'signin':
+        user = message.user;
+        signin.classList.add('d-n');
+        signup.classList.add('d-n');
+        signin.classList.remove('flex');
+        signup.classList.remove('flex');
+        forms["message"].style.display = "grid";
+        chat.style.display = 'block';
+        break;
+
+      case 'signup':
         user = message.user;
         signin.classList.add('d-n');
         signup.classList.add('d-n');
