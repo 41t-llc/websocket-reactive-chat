@@ -84,7 +84,8 @@ ws.onerror = function(event) {
 };
 
 forms["message"].onsubmit = function() {
-  if (this.text.value != ""){
+  console.log("a" + this.text.value.trim() + "a")
+  if (this.text.value != "" && this.text.value.trim() != ""){
     let message = {
       user: user,
       text: this.text.value,
@@ -105,7 +106,7 @@ forms["signin"].onsubmit = function () {
       if (this.login.value == users[i].login &&
           this.password.value == users[i].password) {
         user = this.login.value;
-        forms["message"].querySelector("#user_name").innerHTML = `<b>${user}</b>`;
+        // forms["message"].querySelector("#user_name").innerHTML = `<b>${user}</b>`;
         this.style.display = "none";
         forms["message"].style.display = "grid";
         chat.style.display = 'block';
