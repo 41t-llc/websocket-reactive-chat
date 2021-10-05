@@ -30,8 +30,7 @@ wss.on('connection', ws => {
                   if (result.rowCount) {
                       let date = new Date(),
                           curdate = date.getFullYear() + "-" + date.getDate() + "-" + date.getMonth() + " " + date.toLocaleTimeString();
-
-                      client.query(`INSERT INTO messages(user,chat,date,text) VALUES (${result.rows[0].id},1,'${curdate}','${req.text.replace('/\w/g',(match) => ("\\" + match))}')`,
+                      client.query(`INSERT INTO messages("user",chat,date,text) VALUES (${result.rows[0].id},1,'${curdate}','${req.text.replace('/\w/g',(match) => ("\\" + match))}')`,
                           (err, result) => {
                           if (err) throw err;
                       });
@@ -78,7 +77,7 @@ wss.on('connection', ws => {
                             }
                           };
                           ws.send(JSON.stringify(res));
-                            client.query(`SELECT date,text,username as user FROM messages m inner join users u on m.userid = u.id `, (err, result) => {
+                            client.query(`SELECT date,text,username as user FROM messages m inner join users u on m.user = u.id `, (err, result) => {
                                 if(err) throw err;
                                 if(result.rowCount) {
                                     result.rows.map((message) =>  message.user = { name: message.user})
