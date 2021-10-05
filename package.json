@@ -14,6 +14,7 @@
   "author": "Ishi Inanis, JlacTuK",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
     "pg": "^8.5.1",
     "ws": "^7.4.0"
