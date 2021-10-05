@@ -10,10 +10,11 @@ function app() {
       forms = document.forms,
       user = {};
 
-  ws.onopen = function() {
+  ws.onopen = function(event) {
     indicator.classList.add("success");
     indicator.classList.remove("error");
     sysmes.innerHTML = "Соединение установлено";
+
   };
 
   ws.onclose = function(event) {
@@ -35,42 +36,7 @@ function app() {
     switch (message.type) {
 
       case 'msg':
-        let children = chat.children;
-
-        if (children.length > 0) {
-          let lastChild = children[children.length - 1];
-
-          if (lastChild.children[0].innerText == message.user.name) {
-            lastChild.children[1].innerHTML += `
-                <article class="message flex ai-c grid gap-15">
-                  <i>${message.date}</i>
-                  <span>${message.text}</span>
-                </article>`;
-          } else {
-            chat.innerHTML += `
-                <article class="user_message mymsgs">
-                  <p class="m">${message.user.name}</p>
-                  <section class="items grid gap">
-                    <article class="message flex ai-c grid gap-15">
-                      <i>${message.date}</i>
-                      <span>${message.text}</span>
-                    </article>
-                  </section>
-                </article>`;
-          }
-        } else {
-          chat.innerHTML += `
-              <article class="user_message mymsgs">
-                <p class="m">${message.user.name}</p>
-                <section class="items grid gap">
-                  <article class="message flex ai-c grid gap-15">
-                    <i>${message.date}</i>
-                    <span>${message.text}</span>
-                  </article>
-                </section>
-              </article>`;
-        }
-        chat.scrollTop = chat.scrollHeight;
+        addMessage(message);
         break;
 
       case 'signin':
@@ -93,6 +59,10 @@ function app() {
         chat.style.display = 'block';
         break;
 
+      case 'allmsg':
+        message.messages.map((msg) => addMessage(msg))
+        break;
+
       default:
         // Что-то
 
@@ -106,13 +76,12 @@ function app() {
   };
 
   forms["message"].onsubmit = function() {
-    if (this.text.value.trim() != "" &&
-        user.name != undefined) {
+    if (this.text.value.trim() !== "" &&
+        user.name !== undefined) {
       let message = {
         type: 'msg',
         user: user,
-        text: this.text.value.trim(),
-        date: new Date().toLocaleTimeString().substring(0, 5)
+        text: this.text.value.trim()
       };
 
       this.text.value = "";
@@ -124,7 +93,7 @@ function app() {
   }
 
   forms["signin"].onsubmit = function () {
-    if (this.login.value != "" && this.password.value != "") {
+    if (this.login.value !== "" && this.password.value !== "") {
       let message = {
         type: 'signin',
         login: this.login.value,
@@ -140,9 +109,9 @@ function app() {
   }
 
   forms["signup"].onsubmit = function () {
-    if (this.login.value.trim() != "" &&
-        this.username.value.trim() != "" &&
-        this.password.value.trim() != "") {
+    if (this.login.value.trim() !== "" &&
+        this.username.value.trim() !== "" &&
+        this.password.value.trim() !== "") {
       let message = {
         type: "signup",
         username: this.username.value.trim(),
@@ -161,7 +130,44 @@ function app() {
     document.body.classList.toggle("black");
   }
 }
+function addMessage (message) {
+  let children = chat.children;
+  message.date = new Date(message.date).toLocaleTimeString().substring(0,5);
+  if (children.length > 0) {
+    let lastChild = children[children.length - 1];
 
+    if (lastChild.children[0].innerText === message.user.name) {
+      lastChild.children[1].innerHTML += `
+          <article class="message flex ai-c grid gap-15">
+            <i>${message.date}</i>
+            <span>${message.text}</span>
+          </article>`;
+    } else {
+      chat.innerHTML += `
+          <article class="user_message mymsgs">
+            <p class="m">${message.user.name}</p>
+            <section class="items grid gap">
+              <article class="message flex ai-c grid gap-15">
+                <i>${message.date}</i>
+                <span>${message.text}</span>
+              </article>
+            </section>
+          </article>`;
+    }
+  } else {
+    chat.innerHTML += `
+        <article class="user_message mymsgs">
+          <p class="m">${message.user.name}</p>
+          <section class="items grid gap">
+            <article class="message flex ai-c grid gap-15">
+              <i>${message.date}</i>
+              <span>${message.text}</span>
+            </article>
+          </section>
+        </article>`;
+  }
+  chat.scrollTop = chat.scrollHeight;
+}
 app();
 
 function authFormSwitch() {
