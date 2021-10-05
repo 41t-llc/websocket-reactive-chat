@@ -26,15 +26,14 @@ wss.on('connection', ws => {
             req.user.name != "") {
 
               client.query(`SELECT id FROM users WHERE username = '${req.user.name}'`, (err, result) => {
-                  if(err) throw err;
-                  if(result.rowCount) {
+                  if (err) throw err;
+                  if (result.rowCount) {
                       let date = new Date(),
                           curdate = date.getFullYear() + "-" + date.getDate() + "-" + date.getMonth() + " " + date.toLocaleTimeString();
-                      client.query(`INSERT INTO messages(userid,chat,date,text) VALUES (${result.rows[0].id},1,'${curdate}','${req.text.replace('/\w/g',(match) => ("\\" + match))}')`,
+
+                      client.query(`INSERT INTO messages(user,chat,date,text) VALUES (${result.rows[0].id},1,'${curdate}','${req.text.replace('/\w/g',(match) => ("\\" + match))}')`,
                           (err, result) => {
-
-                          if(err) throw err;
-
+                          if (err) throw err;
                       });
                       let res = {
                           type: 'msg',
@@ -55,8 +54,8 @@ wss.on('connection', ws => {
         break;
 
       case 'signin':
-        if (req.login != "" &&
-            req.password != "") {
+        if (req.login !== "" &&
+            req.password !== "") {
             req.login = req.login.replace('/\w/g',(match) => ("\\" + match));
             req.password = req.password.replace('/\w/g',(match) => ("\\" + match));
 

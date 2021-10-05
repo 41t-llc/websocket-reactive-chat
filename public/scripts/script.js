@@ -60,7 +60,6 @@ function app() {
         break;
 
       case 'allmsg':
-
         message.messages.map((msg) => addMessage(msg))
         break;
 
@@ -77,8 +76,8 @@ function app() {
   };
 
   forms["message"].onsubmit = function() {
-    if (this.text.value.trim() != "" &&
-        user.name != undefined) {
+    if (this.text.value.trim() !== "" &&
+        user.name !== undefined) {
       let message = {
         type: 'msg',
         user: user,
@@ -94,7 +93,7 @@ function app() {
   }
 
   forms["signin"].onsubmit = function () {
-    if (this.login.value != "" && this.password.value != "") {
+    if (this.login.value !== "" && this.password.value !== "") {
       let message = {
         type: 'signin',
         login: this.login.value,
@@ -110,9 +109,9 @@ function app() {
   }
 
   forms["signup"].onsubmit = function () {
-    if (this.login.value.trim() != "" &&
-        this.username.value.trim() != "" &&
-        this.password.value.trim() != "") {
+    if (this.login.value.trim() !== "" &&
+        this.username.value.trim() !== "" &&
+        this.password.value.trim() !== "") {
       let message = {
         type: "signup",
         username: this.username.value.trim(),
@@ -137,7 +136,7 @@ function addMessage (message) {
   if (children.length > 0) {
     let lastChild = children[children.length - 1];
 
-    if (lastChild.children[0].innerText == message.user.name) {
+    if (lastChild.children[0].innerText === message.user.name) {
       lastChild.children[1].innerHTML += `
           <article class="message flex ai-c grid gap-15">
             <i>${message.date}</i>
