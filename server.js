@@ -22,8 +22,8 @@ wss.on('connection', ws => {
     switch (req.type) {
 
       case 'msg':
-        if (req.text.trim() != "" &&
-            req.user.name != "") {
+        if (req.text.trim() !== "" &&
+            req.user.name !== "") {
 
               client.query(`SELECT id FROM users WHERE username = '${req.user.name}'`, (err, result) => {
                   if (err) throw err;
@@ -140,10 +140,11 @@ wss.on('connection', ws => {
 });
 
 // PostgreSQL
+// #TODO Перед коммитом не забывайте включить ssl
 const { Client } = require('pg');
 const client = new Client({
-  connectionString: process.env.DATABASE_URL || "postgres://user:password@localhost:5432/websocketapp"
-//  ssl: { rejectUnauthorized: false }
+  connectionString: process.env.DATABASE_URL, //|| "postgres://user:password@localhost:5432/websocketapp"
+ ssl: { rejectUnauthorized: false }
 });
 
 client.connect();
