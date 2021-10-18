@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+
 const bcrypt = require('bcrypt');
 const saltRounds = 12;
 const PORT = process.env.PORT || 3000;
@@ -29,7 +30,7 @@ wss.on('connection', ws => {
                   if (err) throw err;
                   if (result.rowCount) {
                       let date = new Date(),
-                          curdate = date.getFullYear() + "-" + date.getDate() + "-" + date.getMonth() + " " + date.toLocaleTimeString();
+                          curdate = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.toLocaleTimeString();
                       client.query(`INSERT INTO messages("user",chat,date,text) VALUES (${result.rows[0].id},1,'${curdate}','${req.text.replace('/\w/g',(match) => ("\\" + match))}')`,
                           (err, result) => {
                           if (err) throw err;
@@ -77,9 +78,10 @@ wss.on('connection', ws => {
                             }
                           };
                           ws.send(JSON.stringify(res));
-                            client.query(`SELECT date,text,username as user FROM messages m inner join users u on m.user = u.id `, (err, result) => {
+                            client.query(`SELECT date,text,username as user FROM messages m inner join users u on m.user = u.id order by m.id`, (err, result) => {
                                 if(err) throw err;
                                 if(result.rowCount) {
+
                                     result.rows.map((message) =>  message.user = { name: message.user})
                                     let res = {
                                         type: "allmsg",
@@ -143,8 +145,11 @@ wss.on('connection', ws => {
 // #TODO Перед коммитом не забывайте включить ssl
 const { Client } = require('pg');
 const client = new Client({
-  connectionString: process.env.DATABASE_URL, //|| "postgres://user:password@localhost:5432/websocketapp"
- ssl: { rejectUnauthorized: false }
+
+  connectionString:  process.env.DATABASE_URL || "postgres://user:password@localhost:5432/websocketapp"
+ // ssl: { rejectUnauthorized: false }
 });
 
 client.connect();
+
+

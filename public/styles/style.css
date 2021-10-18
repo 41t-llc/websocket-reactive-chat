@@ -1,6 +1,7 @@
 body.black {
   --body-bgc: #333;
   --main-color: #fff;
+  --modal-windows-bgc: #444;
   --fz: 18px;
   --gap: 5px;
   --msg-bgc: #777;
@@ -23,6 +24,7 @@ body.white {
   --fz: 18px;
   --gap: 5px;
   --msg-bgc: #eee;
+  --modal-windows-bgc: #777;
   --border-color: #3333;
   --color-date: #aaa;
   --msg-color: #444;
@@ -115,8 +117,8 @@ body.grid.grid-row-3 {
   grid-template-rows: 50px 1fr 60px;
 }
 
-.grid.grid-col-3 {
-  grid-template-columns: 20px 1fr 80px;
+.grid.grid-col-4 {
+  grid-template-columns: 30px 1fr 40px 80px;
 }
 
 .grid.gap,
@@ -188,6 +190,81 @@ body.grid.grid-row-3 {
 #condition.grid.grid-col-3 {
   grid-template-columns: 50px 1fr 50px;
 }
+#buttonSettings:hover {
+  animation-name: spinSetting;
+  animation-duration: 10s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+/* Стили для окна с настройками*/
+.settings {
+  position: absolute;
+  padding: 50px;
+  height: auto;
+  max-width: 80%;
+  min-width: 15%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  background-color:  var(--modal-windows-bgc);
+  border-radius: 25px;
+}
+
+.settings input[type='checkbox'] {
+  display: none;
+}
+.slider.round {
+  border-radius: 34px;
+
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  width: 3em;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+.settings input[type='checkbox'] + label {
+  position: relative;
+  display: flex;
+  height: 1.8em;
+  padding-left: 4em
+}
+.settings input[type='checkbox'] + label span {
+  margin: auto 0;
+}
+
+.settings input[type='checkbox']:checked + label .slider {
+  /*background-color: #2196F3;*/
+}
+.settings input[type='checkbox']:checked + label .slider:before {
+  -webkit-transform: translateX(1em);
+  -ms-transform: translateX(1em);
+  background-color: var(--msg-btn-hover-bgc);
+  transform: translateX(1em);
+
+}
 
 #sysmes {
   margin: auto 0;
@@ -226,7 +303,7 @@ body.grid.grid-row-3 {
   border: none;
 }
 
-#themeSwitch svg {
+#condition svg {
   z-index: 1;
   fill: black;
   transition: inherit;
@@ -244,7 +321,7 @@ body.grid.grid-row-3 {
   opacity: 0;
   background-color: yellow;
   border-radius: 50px;
-  box-shadow: 0px 0 10px 10px yellow;
+  box-shadow: 0 0 10px 10px yellow;
   border: 1px solid yellow;
   transition: var(--transition);
 }
@@ -331,6 +408,14 @@ form[name="signup"] > button:focus {
   .grid.grid-col-3 {
     grid-template-columns: 150px 1fr 50px;
   }
+
+
+  .slider:before {
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+  }
 }
 @media screen and (max-width: 568px) {
   body.white {
@@ -339,6 +424,12 @@ form[name="signup"] > button:focus {
 
   body.black {
     --fz: 14px;
+  }
+  .slider:before {
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 3px;
   }
 
   body.grid.grid-row-3 {
@@ -363,5 +454,14 @@ form[name="signup"] > button:focus {
   form[name="signin"] > button,
   form[name="message"] > button {
     background-color: var(--msg-btn-hover-bgc);
+  }
+}
+/* keyframes*/
+@keyframes spinSetting {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
