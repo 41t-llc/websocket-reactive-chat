@@ -146,8 +146,8 @@ wss.on('connection', ws => {
 const { Client } = require('pg');
 const client = new Client({
 
-  connectionString:  process.env.DATABASE_URL || "postgres://user:password@localhost:5432/websocketapp"
- // ssl: { rejectUnauthorized: false }
+  connectionString:  process.env.DATABASE_URL || "postgres://user:password@localhost:5432/websocketapp",
+ ssl: { rejectUnauthorized: false }
 });
 
 client.connect();
