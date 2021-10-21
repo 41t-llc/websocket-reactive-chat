@@ -1,7 +1,10 @@
 function app() {
   let HOST = location.origin.replace(/^http/, 'ws'), //'ws://localhost:3000';
       ws = new WebSocket(HOST),
+      body = document.body,
       chat = document.querySelector('#chat'),
+      chats = document.querySelector("#chats"),
+      menu = document.querySelector('#menu'),
       condition = document.querySelector('#condition'),
       indicator = document.querySelector('#indicator'),
       flagSettings = false,
@@ -35,10 +38,9 @@ function app() {
 
     if (event.wasClean) {
       sysmes.innerHTML = 'Соединение закрыто: <br>';
-    } else {
-      sysmes.innerHTML = 'Соединения как-то закрыто <br>';
     }
     // TODO: Нужно ли перенести в условие?
+    console.log(event)
     sysmes.innerHTML += `<i>код: ${event.code} причина: ${event.reason}</i>`;
   };
 
@@ -162,6 +164,12 @@ function app() {
     else {
       document.querySelector('.settings').style.display = 'none';
     }
+  }
+  menu.onclick = () => {
+    console.log("test");
+    body.classList.toggle("grid-70-1");
+    chats.classList.toggle("d-n");
+
   }
 }
 function addMessage (message) {

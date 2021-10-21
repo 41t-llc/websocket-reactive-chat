@@ -21,7 +21,6 @@ wss.on('connection', ws => {
     let req = JSON.parse(message);
 
     switch (req.type) {
-
       case 'msg':
         if (req.text.trim() !== "" &&
             req.user.name !== "") {
