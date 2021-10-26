@@ -69,9 +69,7 @@ button {
   font-size: 1em;
 }
 
-.d-n {
-  display: none;
-}
+
 
 .p {
   padding: .5em;
@@ -104,7 +102,9 @@ button {
 .ta-c {
   text-align: center;
 }
-
+.m-a {
+  margin: auto;
+}
 .center {
   display: flex;
   align-items: center;
@@ -113,12 +113,17 @@ button {
 .grid.grid-col-2 {
   grid-template-columns: 1fr 50px;
 }
+.grid.grid-70-1 {
+  grid-template-columns: 110px 1fr;
+}
 body.grid.grid-row-3 {
   grid-template-rows: 50px 1fr 60px;
 }
-
+.grid.grid-row-2 {
+  grid-template-rows: 50px 1fr;
+}
 .grid.grid-col-4 {
-  grid-template-columns: 30px 1fr 40px 80px;
+  grid-template-columns: 40px 30px 1fr 40px;
 }
 
 .grid.gap,
@@ -135,7 +140,9 @@ body.grid.grid-row-3 {
 .flex.gap-30 {
   gap: 30px;
 }
-
+.d-n {
+  display: none;
+}
 .success {
   color: var(--ind-color-success);
   background-color: var(--ind-color-success);
@@ -173,6 +180,26 @@ body.grid.grid-row-3 {
   word-break: break-all;
 }
 
+.chats {
+  grid-row-start: 1;
+  grid-row-end: 4;
+  transition: .4s;
+  border-right: 1px solid var(--border-color);
+  padding: 0 5px;
+}
+.chats.d-n {
+  opacity: 0;
+  transition: 2.5s opacity;
+}
+.chats {
+  opacity: 1;
+  transition: 2s opacity;
+}
+.chats img {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+}
 #chat {
   overflow-y: auto;
 }
@@ -209,7 +236,10 @@ body.grid.grid-row-3 {
   background-color:  var(--modal-windows-bgc);
   border-radius: 25px;
 }
-
+.white .settings {
+  background-color: #fff;
+  border: 2px solid #0005;
+}
 .settings input[type='checkbox'] {
   display: none;
 }
@@ -221,6 +251,7 @@ body.grid.grid-row-3 {
 .slider.round:before {
   border-radius: 50%;
 }
+
 .slider {
   position: absolute;
   cursor: pointer;
@@ -261,7 +292,7 @@ body.grid.grid-row-3 {
 .settings input[type='checkbox']:checked + label .slider:before {
   -webkit-transform: translateX(1em);
   -ms-transform: translateX(1em);
-  background-color: var(--msg-btn-hover-bgc);
+  background-color: #88FF4B;
   transform: translateX(1em);
 
 }
@@ -298,8 +329,7 @@ body.grid.grid-row-3 {
   transition: var(--transition);
 }
 
-#themeSwitch:hover {
-  background-color: #0003;
+#themeSwitch:hover button {
   border: none;
 }
 
@@ -313,7 +343,7 @@ body.grid.grid-row-3 {
   fill: yellow;
 }
 
-#themeSwitch::before {
+#themeSwitch button::before {
   content: '';
   position: absolute;
   display: block;
@@ -326,7 +356,7 @@ body.grid.grid-row-3 {
   transition: var(--transition);
 }
 
-#themeSwitch:hover::before {
+#themeSwitch:hover button::before {
   opacity: 1;
 }
 
@@ -373,7 +403,10 @@ form[name="signup"] input {
   font-size: var(--fz);
   border-radius: 10px;
 }
-
+#chats h3 {
+  font-size: 0.72em;
+  text-align: center;
+}
 form[name="signin"] > button,
 form[name="signup"] > button {
   background-color: var(--msg-btn-bgc);

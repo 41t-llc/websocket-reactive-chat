@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 const saltRounds = 12;
 const PORT = process.env.PORT || 3000;
 const INDEX = '/views/index.html';
-let fs = require('fs'), obj;
 const server = express()
   .use("/public", express.static(path.join(__dirname, '/public')))
   .use((req, res) => res.sendFile(INDEX, {root: __dirname}))
@@ -14,14 +13,16 @@ const server = express()
 // WebSocket
 const { Server } = require('ws');
 const wss = new Server({server});
+let clients = [],
+    clientsUserNames = [];
 
 wss.on('connection', ws => {
+    let id;
   console.log('Client connected');
   ws.on('message', message => {
     let req = JSON.parse(message);
 
     switch (req.type) {
-
       case 'msg':
         if (req.text.trim() !== "" &&
             req.user.name !== "") {
@@ -42,7 +43,7 @@ wss.on('connection', ws => {
                           date: new Date(),
                       }
                       res = JSON.stringify(res)
-                      wss.clients.forEach(client => {
+                      clients.forEach(client => {
                           client.send(res);
 
                       });
@@ -64,6 +65,7 @@ wss.on('connection', ws => {
               FROM users
               WHERE login = '${req.login}'`,
               (err, result) => {
+
                 if (err) {
                   throw err;
                 } else {
@@ -78,22 +80,32 @@ wss.on('connection', ws => {
                             }
                           };
                           ws.send(JSON.stringify(res));
-                            client.query(`SELECT date,text,username as user FROM messages m inner join users u on m.user = u.id order by m.id`, (err, result) => {
-                                if(err) throw err;
+                          id = result.rows[0].id;
+                          clients[result.rows[0].id] = ws;
+                          clientsUserNames[id] = result.rows[0].username;
+                          client.query(`SELECT date,text,username as user FROM messages m inner join users u on m.user = u.id order by m.id`, (err, result) => {
+                              if(err) throw err;
                                 if(result.rowCount) {
-
                                     result.rows.map((message) =>  message.user = { name: message.user})
                                     let res = {
                                         type: "allmsg",
                                         messages: result.rows
                                     }
                                     ws.send(JSON.stringify(res));
+                                    SendUsers();
                                 }
                             });
                         }
+                        else {
+                           SendError("error","Data is incorrected");
+                        }
                     })
 
-                }} })
+                }
+                else {
+                      SendError("error","Data is incorrected");
+                  }
+                } })
 
 
         }
@@ -121,7 +133,6 @@ wss.on('connection', ws => {
                         user: {
                           name: req.username
                         }
-
                       };
                       ws.send(JSON.stringify(res));
                     }
@@ -138,7 +149,31 @@ wss.on('connection', ws => {
 
     }
   });
-  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => {
+      console.log('Client disconnected' + id)
+      if(id) {
+          delete clients[id];
+          delete clientsUserNames[id];
+          SendUsers();
+      }
+  });
+
+  function SendError(type, message) {
+      let res = {
+          type: type,
+          error: message
+      };
+      ws.send(JSON.stringify(res));
+    }
+    function SendUsers() {
+        let res = {
+            type: "activityUsers",
+            activityUsers: clientsUserNames.filter(x => x)
+        }
+        clients.forEach(client => {
+            client.send(JSON.stringify(res));
+        });
+    }
 });
 
 // PostgreSQL
