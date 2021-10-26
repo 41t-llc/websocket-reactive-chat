@@ -114,7 +114,7 @@ button {
   grid-template-columns: 1fr 50px;
 }
 .grid.grid-70-1 {
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 110px 1fr;
 }
 body.grid.grid-row-3 {
   grid-template-rows: 50px 1fr 60px;
@@ -182,10 +182,9 @@ body.grid.grid-row-3 {
 
 .chats {
   grid-row-start: 1;
-  grid-row-end: 3;
+  grid-row-end: 4;
   transition: .4s;
-  border-top: 4px solid var(--border);
-  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border-color);
   padding: 0 5px;
 }
 .chats.d-n {
@@ -404,7 +403,10 @@ form[name="signup"] input {
   font-size: var(--fz);
   border-radius: 10px;
 }
-
+#chats h3 {
+  font-size: 0.72em;
+  text-align: center;
+}
 form[name="signin"] > button,
 form[name="signup"] > button {
   background-color: var(--msg-btn-bgc);

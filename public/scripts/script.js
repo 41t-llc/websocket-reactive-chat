@@ -1,3 +1,4 @@
+
 function app() {
   let HOST = location.origin.replace(/^http/, 'ws'), //'ws://localhost:3000';
       ws = new WebSocket(HOST),
@@ -8,13 +9,16 @@ function app() {
       condition = document.querySelector('#condition'),
       indicator = document.querySelector('#indicator'),
       flagSettings = false,
+      theme = document.querySelector("#ThemeSwitch"),
       settings = document.querySelector('#buttonSettings'),
       sysmes = document.querySelector('#sysmes'),
       censored = document.querySelector('#censored'),
       signin = document.querySelector('article.signin'),
       signup = document.querySelector('article.signup'),
       forms = document.forms,
-      user = {};
+      user = {},
+      messages = [];
+
       // kemoji = KEmoji.initByClass('smiles', {
       //   width: 400,
       //   height: 200,
@@ -24,7 +28,8 @@ function app() {
       // }),
       // emojies = kemoji[0];
 
-
+   localStorage.getItem("theme") === "black" ? theme.checked = true : theme.checked = false;
+   body.classList.add(localStorage.getItem("theme") || "white");
   ws.onopen = function (event) {
     indicator.classList.add('success');
     indicator.classList.remove('error');
@@ -40,7 +45,6 @@ function app() {
       sysmes.innerHTML = 'Соединение закрыто: <br>';
     }
     // TODO: Нужно ли перенести в условие?
-    console.log(event)
     sysmes.innerHTML += `<i>код: ${event.code} причина: ${event.reason}</i>`;
   };
 
@@ -50,6 +54,7 @@ function app() {
     switch (message.type) {
 
       case 'msg':
+        messages.push(message);
         addMessage(message);
         break;
 
@@ -74,9 +79,18 @@ function app() {
         break;
 
       case 'allmsg':
-        message.messages.map((msg) => addMessage(msg))
+        messages = message.messages;
+        message.messages.map((msg) => {
+          addMessage(msg);
+        });
         break;
 
+      case 'activityUsers':
+        ShowUsers(message.activityUsers);
+        break;
+
+      case 'error':
+        alert(message.error)
       default:
         // Что-то
 
@@ -107,7 +121,7 @@ function app() {
         user: user,
         text: this.text.value.trim()
       };
-      console.log(emojies.getValue());
+
       this.text.value = '';
       ws.send(JSON.stringify(message));
     } else {
@@ -149,11 +163,22 @@ function app() {
     return false;
   }
   censored.onchange = () => {
-
+    while(chat.firstChild) {
+      chat.removeChild(chat.firstChild);
+    }
+    messages.map(x => addMessage(x));
   }
-  document.querySelector('#themeSwitch').onclick = () => {
-    document.body.classList.toggle('white');
-    document.body.classList.toggle('black');
+  document.querySelector('#themeSwitch').onchange = (e) => {
+    if(e.target.checked) {
+      localStorage.setItem('theme','black');
+      document.body.classList.remove('white');
+      document.body.classList.add('black')
+    }
+    else {
+      document.body.classList.remove('black');
+      document.body.classList.add('white')
+      localStorage.setItem('theme','white');
+    }
   }
   settings.onclick = () => {
     flagSettings = !flagSettings;
@@ -166,52 +191,50 @@ function app() {
     }
   }
   menu.onclick = () => {
-    console.log("test");
     body.classList.toggle("grid-70-1");
     chats.classList.toggle("d-n");
 
   }
-}
-function addMessage (message) {
-  console.log(chat)
-  let children = chat.children;
-  message.date = new Date(message.date).toLocaleTimeString().substring(0,5);
-  if (children.length > 0) {
-    let lastChild = children[children.length - 1];
-
-    if (lastChild.children[0].innerText === message.user.name) {
-      lastChild.children[1].innerHTML += `
+  function addMessage (message) {
+    let children = chat.children,
+    datemsg = new Date(message.date).toLocaleTimeString().substring(0,5),
+        text = '';
+    if (children.length > 0) {
+      let lastChild = children[children.length - 1];
+     text = censored.checked ? message.text.split(" ").map(word => testsWords.includes(word.toLowerCase()) ? '*'.repeat(word.length) : word).join(" ") : message.text;
+      if (lastChild.children[0].innerText === message.user.name) {
+        lastChild.children[1].innerHTML += `
           <article class='message flex ai-c grid gap-15'>
-            <i>${message.date}</i>
-            <span>${message.text}</span>
+            <i>${datemsg}</i>
+            <span>${text}</span>
           </article>`;
-    } else {
-      chat.innerHTML += `
+      } else {
+        chat.innerHTML += `
           <article class='user_message mymsgs'>
             <p class='m'>${message.user.name}</p>
             <section class='items grid gap'>
               <article class='message flex ai-c grid gap-15'>
-                <i>${message.date}</i>
-                <span>${message.text}</span>
+                <i>${datemsg}</i>
+                <span>${text}</span>
               </article>
             </section>
           </article>`;
-    }
-  } else {
-    chat.innerHTML += `
+      }
+    } else {
+      chat.innerHTML += `
         <article class='user_message mymsgs'>
           <p class='m'>${message.user.name}</p>
           <section class='items grid gap'>
             <article class='message flex ai-c grid gap-15'>
-              <i>${message.date}</i>
-              <span>${message.text}</span>
+              <i>${datemsg}</i>
+              <span>${text}</span>
             </article>
           </section>
         </article>`;
+    }
+    chat.scrollTop = chat.scrollHeight;
   }
-  chat.scrollTop = chat.scrollHeight;
 }
-app();
 
 function authFormSwitch() {
   let signin = document.querySelector('article.signin'),
@@ -222,3 +245,15 @@ function authFormSwitch() {
   signup.classList.toggle('flex');
   signup.classList.toggle('d-n');
 }
+app();
+function ShowUsers(listUsers) {
+  while(users.firstChild) {
+    users.removeChild(users.firstChild);
+  }
+  listUsers.forEach(user => {
+    users.innerHTML += `
+      <div> ${user}</div>
+    `
+  })
+}
+
