@@ -143,6 +143,12 @@ body.grid.grid-row-3 {
 .d-n {
   display: none;
 }
+.absolute {
+  position: absolute;
+}
+.relative {
+  position: relative;
+}
 .success {
   color: var(--ind-color-success);
   background-color: var(--ind-color-success);
@@ -180,13 +186,6 @@ body.grid.grid-row-3 {
   word-break: break-all;
 }
 
-.chats {
-  grid-row-start: 1;
-  grid-row-end: 4;
-  transition: .4s;
-  border-right: 1px solid var(--border-color);
-  padding: 0 5px;
-}
 .chats.d-n {
   opacity: 0;
   transition: 2.5s opacity;
@@ -209,7 +208,16 @@ body.grid.grid-row-3 {
 #chat.p {
   padding: 0 .5em;
 }
-
+.sprdate hr {
+  width: 100%;
+  top: 50%;
+  z-index: -1;
+  opacity: .5;
+  color: var(--border-color);
+}
+.sprdate p {
+  z-index: 2;
+}
 #condition {
   border-bottom: var(--border);
 }
@@ -217,14 +225,32 @@ body.grid.grid-row-3 {
 #condition.grid.grid-col-3 {
   grid-template-columns: 50px 1fr 50px;
 }
-#buttonSettings:hover {
+#buttonSettings:hover svg,
+#buttonSettings:focus svg{
+  margin: 3px;
   animation-name: spinSetting;
   animation-duration: 10s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
+
+#users {
+  counter-reset: number;
+}
+
+#users > *:before {
+  background: #3E8D22;
+  border-radius: 100%;
+  align-self: center;
+  counter-increment: number;
+  content: counter(number);
+  padding: 2px 10px;
+
+
+}
 /* Стили для окна с настройками*/
-.settings {
+.settings,
+.info {
   position: absolute;
   padding: 50px;
   height: auto;
@@ -235,6 +261,23 @@ body.grid.grid-row-3 {
   transform: translate(-50%,-50%);
   background-color:  var(--modal-windows-bgc);
   border-radius: 25px;
+  z-index: 3;
+}
+.white #closeSettings {
+  background: #000000AA;
+}
+.black #closeSettings {
+  background: #000000EE;
+}
+.full-screen {
+  width: 100vw;
+  height: 100vh;
+}
+.absolute.full-screen {
+  top:0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 .white .settings {
   background-color: #fff;
