@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="98a1bbb3-b567-4016-9b9e-0091075112ca" name="Changes" comment="add chats list">
+    <list default="true" id="98a1bbb3-b567-4016-9b9e-0091075112ca" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/public/styles/mail.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/scripts/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/scripts/script.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/styles/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/views/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/views/index.html" afterDir="false" />
     </list>
@@ -19,8 +20,25 @@
   <component name="ComposerSettings">
     <execution />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="JavaScript File" />
+        <option value="CSS File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1yp2AEls64qIKo8C0RZENhKDY3Q" />
   <component name="ProjectViewState">
@@ -28,9 +46,15 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_MARK_IGNORED_FILES_AS_EXCLUDED" value="true" />
+    <property name="DatabaseDriversLRU" value="postgresql" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="database.data.extractors.current.export.id" value="Comma-separated (CSV)_id" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -38,6 +62,11 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
     <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RunManager">
+    <configuration name="reload" type="NodeJSConfigurationType" application-parameters="npm start" working-dir="$PROJECT_DIR$">
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -53,7 +82,45 @@
       <workItem from="1633369220667" duration="3641000" />
       <workItem from="1633417331538" duration="15547000" />
       <workItem from="1633458251856" duration="1298000" />
-      <workItem from="1634812869089" duration="70000" />
+      <workItem from="1634747748015" duration="273000" />
+      <workItem from="1634748289438" duration="1875000" />
+      <workItem from="1634829884493" duration="4239000" />
+      <workItem from="1635014574520" duration="3563000" />
+      <workItem from="1635167718658" duration="7933000" />
+      <workItem from="1635259541697" duration="9049000" />
+      <workItem from="1635328260696" duration="684000" />
+      <workItem from="1635353638065" duration="751000" />
+      <workItem from="1635437016542" duration="7085000" />
+      <workItem from="1635523863798" duration="2760000" />
+      <workItem from="1635581863270" duration="1334000" />
+      <workItem from="1635687346594" duration="2488000" />
+      <workItem from="1635774096624" duration="5421000" />
+      <workItem from="1635845167150" duration="4672000" />
+      <workItem from="1635927492905" duration="1408000" />
+      <workItem from="1636028963588" duration="675000" />
+      <workItem from="1636451339766" duration="929000" />
+      <workItem from="1636554411562" duration="389000" />
+      <workItem from="1636634482195" duration="35000" />
+      <workItem from="1637356502357" duration="599000" />
+      <workItem from="1637401433610" duration="623000" />
+      <workItem from="1637772306190" duration="401000" />
+      <workItem from="1640701927537" duration="1575000" />
+      <workItem from="1640707295943" duration="2802000" />
+      <workItem from="1640950842327" duration="1630000" />
+      <workItem from="1641138184877" duration="171000" />
+      <workItem from="1641317765053" duration="7935000" />
+      <workItem from="1641476374905" duration="599000" />
+      <workItem from="1641747264073" duration="2230000" />
+      <workItem from="1641833525032" duration="4109000" />
+      <workItem from="1641912285082" duration="6733000" />
+      <workItem from="1642343694221" duration="8616000" />
+      <workItem from="1642437947495" duration="6299000" />
+      <workItem from="1642531133326" duration="1341000" />
+      <workItem from="1642677969531" duration="4201000" />
+      <workItem from="1642858203236" duration="3460000" />
+      <workItem from="1642961828279" duration="4600000" />
+      <workItem from="1643048359878" duration="3032000" />
+      <workItem from="1643132075005" duration="4428000" />
     </task>
     <servers />
   </component>
@@ -71,10 +138,5 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix and redesign" />
-    <MESSAGE value="add chats list" />
-    <option name="LAST_COMMIT_MESSAGE" value="add chats list" />
   </component>
 </project>

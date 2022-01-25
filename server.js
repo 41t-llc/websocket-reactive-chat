@@ -1,6 +1,6 @@
+
 const express = require('express');
 const path = require('path');
-
 const bcrypt = require('bcrypt');
 const saltRounds = 12;
 const PORT = process.env.PORT || 3000;
@@ -8,26 +8,34 @@ const nodeMailer = require('nodemailer');
 const INDEX = '/views/index.html';
 const server = express()
   .use("/public", express.static(path.join(__dirname, '/public')))
-  .use((req, res) => res.sendFile(INDEX, {root: __dirname}))
+  .use("/",(req, res) => res.sendFile(INDEX, {root: __dirname}))
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
+// app
+const app = express();
+app.get("/api/verify", (req, res) => {
+    console.log("VERIFY");
+    console.log(req.query.token);
+
+    VerifingUser(req.query.token);
+    res.redirect("?errors='notoken");
+})
+app.listen(PORT+1);
 // WebSocket
 const { Server } = require('ws');
 const wss = new Server({server});
 // Transporter
-let testAccount =  nodeMailer.createTestAccount();
 const transporter = nodeMailer.createTransport({
     host: "smtp.mailtrap.io",
     port: 2525,
     auth: {
         user: "62e844d75fb7d5",
-        pass: "bfce2bf 37f5712"
+        pass: "bfce2bf37f5712"
     }
 });
 let clients = [],
     clientsUserNames = [],
     UsersForVerify = [];
-
 wss.on('connection', ws => {
     let id;
   console.log('Client connected');
@@ -134,20 +142,69 @@ wss.on('connection', ws => {
             req.password = req.password.replace('/\w/g',(match) => ("\\" + match));
           bcrypt.hash(req.password, saltRounds,(err,hash) => {
             if(err) throw err;
-            let user = {
-                data : {
-                    username: req.username,
-                    login: req.login,
-                    password: hash
-                },
-                verifyToken : GenerateToken()
+
+            if(CheckEmail(req.email)) {
+                let user = {
+                    data: {
+                        username: req.username,
+                        login: req.login,
+                        email: req.email,
+                        password: hash
+                    },
+                    verifyToken: GenerateToken(),
+                    timeOut: setTimeout(() => {
+                        console.log("Delete User");
+                        delete UsersForVerify[this.verifyToken];
+                    }, 1800000)
+                }
+                UsersForVerify[user.verifyToken] = user;
+                console.log("User add in list");
+                transporter.sendMail({
+                    to: req.email,
+                    subject: "GPT VERIFY",
+                    html: `
+                  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+                    <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+                            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                            <title>MAIL</title>
+                     
+                            <style>
+                            body {
+                            border-radius: 20px;
+                            background-color: #FFFAAF
+                            }
+                            
+                            a {
+                                text-decoration: none;
+                                font-size: 25px;
+                            }
+                            </style>
+                        </head>
+                        <body>
+                        <table style="width: 100%">
+                            <tr style="height: 50px;">
+                            
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span> Я люблю когда ссылки адекватны и мне нравятся 
+                                        <a href="localhost:3001/api/verify?token=${user.verifyToken}">верификация</a>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        </body>
+                    </html>
+                    `
+                })
             }
-              UsersForVerify[user.verifyToken] = user;
-            transporter.sendMail({
-                to: req.email,
-                subject: "GPT VERIFY",
-                html: `<a href='${user.verifyToken}'`
-            })
+            else {
+                console.log("Такой пользователь уже есть");
+            }
           })
 
         }
@@ -181,6 +238,22 @@ wss.on('connection', ws => {
       }
   });
 
+    function SendError(type, message) {
+        let res = {
+            type: type,
+            error: message
+        };
+        ws.send(JSON.stringify(res));
+    }
+    function SendUsers() {
+        let res = {
+            type: "activityUsers",
+            activityUsers: clientsUserNames.filter(x => x)
+        }
+        clients.forEach(client => {
+            client.send(JSON.stringify(res));
+        });
+    }
 
 });
 //Queries
@@ -188,6 +261,7 @@ wss.on('connection', ws => {
 // PostgreSQL
 // #TODO Перед коммитом не забывайте включить ssl
 const { Client } = require('pg');
+const {json} = require("express");
 const client = new Client({
 
   connectionString:  process.env.DATABASE_URL || "postgres://user:password@localhost:5432/websocketapp",
@@ -195,46 +269,25 @@ const client = new Client({
 });
 
 client.connect();
-
-
-function SendError(type, message) {
-    let res = {
-        type: type,
-        error: message
-    };
-    ws.send(JSON.stringify(res));
-}
-function SendUsers() {
-    let res = {
-        type: "activityUsers",
-        activityUsers: clientsUserNames.filter(x => x)
-    }
-    clients.forEach(client => {
-        client.send(JSON.stringify(res));
-    });
-}
 function VerifingUser (token) {
-    let user = UsersForVerify[token];
+    let user = UsersForVerify[token],
+        check = false;
+
     client.query(`
               INSERT INTO users(username, login, password)
               VALUES ('${user.data.username}', '${user.data.login}', '${user.data.password}')`,
         (err, result) => {
-            if (err) {
-                throw err;
-            } else {
-                if (result.rowCount) {
+            if (err) throw err;
 
-                    let res = {
-                        type: 'signup',
-                        data: "Sign up is success"
-                    };
-                    ws.send(JSON.stringify(res));
-                }
-            }
+            if(!result.rowCount)  check = true;
         }
     );
-
+    console.log("I send " + check);
+    return check;
 }
+
+
+
 function GenerateToken() {
     const chars =
         "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -242,7 +295,23 @@ function GenerateToken() {
         { length: 50 },
         (v, k) => chars[Math.floor(Math.random() * chars.length)]
     );
-    console.log(randomArray.join(""));
     return randomArray.join("");
+}
+async function CheckEmail(email) {
+    let check = true;
+    await client.query(`Select id from users where email = '${email}'`, (err, result) => {
+        if(err) throw err;
+        if(result.rowCount) {
+            check = false;
+        }
+    });
+    for (let x in UsersForVerify) {
+        let y = UsersForVerify[x];
+        if(y.data['email'] === email) {
+            check = false;
+            break;
+        }
 
+    }
+    return check;
 }

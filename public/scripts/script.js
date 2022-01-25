@@ -1,3 +1,13 @@
+console.log(window.location.search)
+if(window.location.search) {
+  if(confirm("Ваш токен просрочен, пожалуйста пройдите регистрацию снова")) {
+    window.location.href = window.location.url;
+  }
+
+
+
+}
+
 async function app() {
 
   let HOST = location.origin.replace(/^http/, 'ws'), //'ws://localhost:3000';
@@ -22,8 +32,8 @@ async function app() {
       user = {},
       messages = [],
       prevdate = null,
-      d = null;
-
+      d = null,
+      connectionTries = null;
 
 
    localStorage.getItem("theme") === "black" ? theme.checked = true : theme.checked = false;
@@ -39,6 +49,7 @@ async function app() {
       console.log("I send data");
       ws.send(JSON.stringify(data));
     }, 10000);
+    clearInterval(connectionTries);
   };
 
   ws.onclose = function (event) {
@@ -108,6 +119,10 @@ async function app() {
     indicator.classList.add('error');
     indicator.classList.remove('success');
     sysmes.innerHTML = `<b>Система:</b>ошибка ${event.message}`;
+    connectionTries = setInterval(() => {
+      ws = new WebSocket(HOST);
+    }, 1000);
+
   };
 
   forms['message'].onsubmit = function () {
@@ -144,11 +159,14 @@ async function app() {
   }
 
   forms['signup'].onsubmit = function () {
+
     if (this.login.value.trim() !== '' &&
         this.username.value.trim() !== '' &&
-        this.password.value.trim() !== '') {
+        this.password.value.trim() !== '' &&
+        validateEmail(this.email.value.trim()) && this.password.value === this.confirmPassword.value) {
       let message = {
         type: 'signup',
+        email: this.email.value.trim(),
         username: this.username.value.trim(),
         password: this.password.value.trim(),
         login: this.login.value.trim()
@@ -211,6 +229,11 @@ async function app() {
   }
   function toggleInfo () {
     blockInfo.classList.toggle("d-n");
+  }
+
+  function validateEmail(email) {
+    var re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+    return re.test(String(email).toLowerCase());
   }
   
 }
@@ -284,8 +307,9 @@ class BuilderClass {
 
   }
 }
-app();
 
+
+app();
 function authFormSwitch() {
   let signin = document.querySelector('article.signin'),
       signup = document.querySelector('article.signup');
