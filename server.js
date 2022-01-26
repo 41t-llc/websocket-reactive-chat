@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const saltRounds = 12;
+
 const PORT = process.env.PORT || 3000;
 const nodeMailer = require('nodemailer');
 const INDEX = '/views/index.html';
@@ -17,8 +18,8 @@ app.get("/api/verify", (req, res) => {
     console.log("VERIFY");
     console.log(req.query.token);
 
-    VerifingUser(req.query.token);
-    res.redirect("?errors='notoken");
+    VerifingUser(req.query.token, res);
+
 })
 app.listen(PORT+1);
 // WebSocket
@@ -33,11 +34,15 @@ const transporter = nodeMailer.createTransport({
         pass: "bfce2bf37f5712"
     }
 });
+
+
 let clients = [],
     clientsUserNames = [],
     UsersForVerify = [];
 wss.on('connection', ws => {
     let id;
+
+
   console.log('Client connected');
     ws.try = 0;
   ws.on('message', message => {
@@ -127,7 +132,8 @@ wss.on('connection', ws => {
                 else {
                       SendError("error","Data is incorrected");
                   }
-                } })
+                }
+  })
 
 
         }
@@ -172,31 +178,38 @@ wss.on('connection', ws => {
                             <title>MAIL</title>
                      
                             <style>
-                            body {
-                            border-radius: 20px;
-                            background-color: #FFFAAF
+                            * {
+                                padding: 0;
+                                margin: 0;
+                            }
+                            
+                            body {    
+                                border-radius: 20px;
+                                background-color: #FFFAAF
                             }
                             
                             a {
                                 text-decoration: none;
                                 font-size: 25px;
                             }
+                            table {
+                                width: 100%;
+                            }
                             </style>
                         </head>
                         <body>
-                        <table style="width: 100%">
-                            <tr style="height: 50px;">
-                            
+                        <table>
+                            <tr style="min-height: 50px; background-color: #bdbbbb">
+                                <td style="font-size: 40px; text-align: center">GPT GROUP</td>
                             </tr>
                             <tr>
                                 <td>
                                     <span> Я люблю когда ссылки адекватны и мне нравятся 
-                                        <a href="localhost:3001/api/verify?token=${user.verifyToken}">верификация</a>
+                                        <a href="http://localhost:3001/api/verify?token=${user.verifyToken}">верификация</a>
                                     </span>
                                 </td>
                             </tr>
                         </table>
-                        
                         </body>
                     </html>
                     `
@@ -212,7 +225,7 @@ wss.on('connection', ws => {
 
       case "Check":
           if(ws.try !== "Sign in") {
-              if (ws.try === 5) {
+              if (ws.try%5 === 0) {
                   let data = {
                       type: 'close'
                   }
@@ -269,20 +282,25 @@ const client = new Client({
 });
 
 client.connect();
-function VerifingUser (token) {
-    let user = UsersForVerify[token],
+function VerifingUser (token, res) {
+    let user = UsersForVerify[token] || false,
         check = false;
+    if(user) {
+        res.redirect("http://localhost:3000");
+        client.query(`
+                  INSERT INTO users(username, login, password)
+                  VALUES ('${user.data.username}', '${user.data.login}', '${user.data.password}')`,
+            (err, result) => {
+                if (err) throw err;
 
-    client.query(`
-              INSERT INTO users(username, login, password)
-              VALUES ('${user.data.username}', '${user.data.login}', '${user.data.password}')`,
-        (err, result) => {
-            if (err) throw err;
-
-            if(!result.rowCount)  check = true;
-        }
-    );
-    console.log("I send " + check);
+                if(!result.rowCount)  check = true;
+            }
+        );
+        console.log("I send " + check);
+    }
+    else {
+        res.redirect("/?errors=notoken");
+    }
     return check;
 }
 

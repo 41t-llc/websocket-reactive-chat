@@ -3,9 +3,6 @@ if(window.location.search) {
   if(confirm("Ваш токен просрочен, пожалуйста пройдите регистрацию снова")) {
     window.location.href = window.location.url;
   }
-
-
-
 }
 
 async function app() {
@@ -104,11 +101,11 @@ async function app() {
             break;
 
       case 'close':
-        clearInterval(d);
-        ws.close();
-       if(confirm("Вы не успели войти в систему")) {
-          app();
-        }
+       if(!confirm("Вы не успели войти в систему")) {
+         ws.close();
+         clearInterval(d);
+       }
+       break;
       default:
         // Что-то
 

@@ -225,6 +225,11 @@ body.grid.grid-row-3 {
 #condition.grid.grid-col-3 {
   grid-template-columns: 50px 1fr 50px;
 }
+buttonSettings svg,
+#buttonSettings svg {
+  transform: rotate(0);
+  transition: 1s;
+}
 #buttonSettings:hover svg,
 #buttonSettings:focus svg{
   margin: 3px;
@@ -253,6 +258,7 @@ body.grid.grid-row-3 {
 .info {
   position: absolute;
   padding: 50px;
+  opacity: 1;
   height: auto;
   max-width: 80%;
   min-width: 15%;
@@ -262,6 +268,18 @@ body.grid.grid-row-3 {
   background-color:  var(--modal-windows-bgc);
   border-radius: 25px;
   z-index: 3;
+  animation-name: togglePanel;
+  animation-duration: .5s;
+  animation-direction: normal;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
+}
+.info.d-n,
+.settings.d-n {
+  animation-direction: reverse;
+  animation-duration: .5s;
+  transition: display 1s linear .5s;
+
 }
 .white #closeSettings {
   background: #000000AA;
@@ -442,6 +460,7 @@ form[name="signin"] input,
 form[name="signup"] input {
   background-color: var(--msg-bgc);
   color: var(--msg-color);
+  -webkit-text-fill-color: var(--msg-color);
   border: none;
   font-size: var(--fz);
   border-radius: 10px;
@@ -540,4 +559,17 @@ form[name="signup"] > button:focus {
   to {
     transform: rotate(360deg);
   }
+}
+@keyframes togglePanel {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0;
+    display: grid;
+  }
+  100% {
+    opacity: 100%;
+  }
+
 }
