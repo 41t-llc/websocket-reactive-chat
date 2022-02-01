@@ -4,7 +4,11 @@ if(window.location.search) {
     window.location.href = window.location.url;
   }
 }
-
+/*
+* Задача:
+* Сделать переход по чатам
+*
+* */
 async function app() {
 
   let HOST = location.origin.replace(/^http/, 'ws'), //'ws://localhost:3000';
@@ -26,6 +30,7 @@ async function app() {
       signup = document.querySelector('article.signup'),
       closeSettings = document.querySelector('article#closeSettings'),
       forms = document.forms,
+      chatinfo = new chatInfo(),
       user = {},
       messages = [],
       prevdate = null,
@@ -65,7 +70,7 @@ async function app() {
 
       case 'msg':
         messages.push(message);
-        addMessage(message);
+        builder.createMessage(chat,message);
         break;
 
       case 'signin':
@@ -106,6 +111,10 @@ async function app() {
          clearInterval(d);
        }
        break;
+      case 'chats':
+        chatinfo.name = message.data[0].name;
+        chatinfo.owner = message.data[0].username;
+        console.log(message);
       default:
         // Что-то
 
@@ -178,7 +187,7 @@ async function app() {
     while(chat.firstChild) {
       chat.removeChild(chat.firstChild);
     }
-    messages.map(x => addMessage(x));
+    messages.map(x => builder.createMessage(chat,x));
   }
   closeSettings.onclick = () => {
     toggleSettings();
@@ -306,7 +315,7 @@ class BuilderClass {
 }
 
 
-app();
+
 function authFormSwitch() {
   let signin = document.querySelector('article.signin'),
       signup = document.querySelector('article.signup');
@@ -316,3 +325,26 @@ function authFormSwitch() {
   signup.classList.toggle('flex');
   signup.classList.toggle('d-n');
 }
+
+class chatInfo {
+  #name
+  #owner
+  constructor() {
+
+  }
+  get name() {
+    return this.#name;
+  }
+  set name(value) {
+    this.#name = value
+    document.getElementById("chat_name").innerText = value;
+  }
+  set owner(value) {
+    document.getElementById("chat_owner").innerText = value;
+    this.#owner = value
+  }
+  get owner() {
+    return this.#owner;
+  }
+}
+app();

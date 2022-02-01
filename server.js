@@ -1,4 +1,4 @@
-
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const bcrypt = require('bcrypt');
@@ -30,8 +30,8 @@ const transporter = nodeMailer.createTransport({
     host: "smtp.mailtrap.io",
     port: 2525,
     auth: {
-        user: "62e844d75fb7d5",
-        pass: "bfce2bf37f5712"
+        user: process.env.mailUser,
+        pass: process.env.mailPass
     }
 });
 
@@ -44,7 +44,7 @@ wss.on('connection', ws => {
 
 
   console.log('Client connected');
-    ws.try = 0;
+    ws.try = 1;
   ws.on('message', message => {
     let req = JSON.parse(message);
 
@@ -120,6 +120,8 @@ wss.on('connection', ws => {
                                     ws.send(JSON.stringify(res));
                                     ws.try = "Sign in";
                                     SendUsers();
+                                    SendChats(id);
+
                                 }
                             });
                         }
@@ -148,7 +150,6 @@ wss.on('connection', ws => {
             req.password = req.password.replace('/\w/g',(match) => ("\\" + match));
           bcrypt.hash(req.password, saltRounds,(err,hash) => {
             if(err) throw err;
-
             if(CheckEmail(req.email)) {
                 let user = {
                     data: {
@@ -166,6 +167,7 @@ wss.on('connection', ws => {
                 UsersForVerify[user.verifyToken] = user;
                 console.log("User add in list");
                 transporter.sendMail({
+                    from: process.env.mail,
                     to: req.email,
                     subject: "GPT VERIFY",
                     html: `
@@ -267,6 +269,21 @@ wss.on('connection', ws => {
             client.send(JSON.stringify(res));
         });
     }
+     function SendChats(id) {
+         let data;
+         client.query(`SELECT name,username FROM chats c left join users u on c.owner = u.id`, (err, result) => {
+             if(err) throw err;
+             if(result.rowCount) {
+
+                 let res = {
+                     type: "chats",
+                     data: result.rows
+                 }
+                 ws.send(JSON.stringify(res));
+             }
+         });
+
+    }
 
 });
 //Queries
@@ -282,6 +299,7 @@ const client = new Client({
 });
 
 client.connect();
+
 function VerifingUser (token, res) {
     let user = UsersForVerify[token] || false,
         check = false;
@@ -304,8 +322,14 @@ function VerifingUser (token, res) {
     return check;
 }
 
-
-
+async function getMessages(id) {
+    await client.query(`Select * from messages where chat = ${id}`, (err, result) => {
+        if (err) throw err;
+        if (result.rowCount) {
+            return result;
+        }
+    })
+}
 function GenerateToken() {
     const chars =
         "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";

@@ -269,7 +269,7 @@ buttonSettings svg,
   border-radius: 25px;
   z-index: 3;
   animation-name: togglePanel;
-  animation-duration: .5s;
+  animation-duration: .3s;
   animation-direction: normal;
   animation-timing-function: linear;
   animation-iteration-count: 1;
