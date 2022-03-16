@@ -30,8 +30,8 @@ const transporter = nodeMailer.createTransport({
     host: "smtp.mailtrap.io",
     port: 2525,
     auth: {
-        user: process.env.mailUser,
-        pass: process.env.mailPass
+        user: process.env["MAIL_USER"],
+        pass: process.env["MAIL_USER"]
     }
 });
 
@@ -58,9 +58,10 @@ wss.on('connection', ws => {
                   if (result.rowCount) {
                       let date = new Date(),
                           curdate = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.toLocaleTimeString();
-                      client.query(`INSERT INTO messages("user",chat,date,text) VALUES (${result.rows[0].id},1,'${curdate}','${req.text.replace('/\w/g',(match) => ("\\" + match))}')`,
+                      client.query(`INSERT INTO messages("user",chat,date,text) VALUES (${result.rows[0].id},'${req.chat}','${curdate}','${req.text.replace('/\w/g',(match) => ("\\" + match))}')`,
                           (err, result) => {
                           if (err) throw err;
+                              console.log(result);
                       });
                       let res = {
                           type: 'msg',
@@ -105,25 +106,15 @@ wss.on('connection', ws => {
                               name: result.rows[0].username
                             }
                           };
+                          ws.user = result.rows[0];
                           ws.send(JSON.stringify(res));
                           id = result.rows[0].id;
                           clients[result.rows[0].id] = ws;
                           clientsUserNames[id] = result.rows[0].username;
-                          client.query(`SELECT date,text,username as user FROM messages m inner join users u on m.user = u.id order by m.id`, (err, result) => {
-                              if(err) throw err;
-                                if(result.rowCount) {
-                                    result.rows.map((message) =>  message.user = { name: message.user})
-                                    let res = {
-                                        type: "allmsg",
-                                        messages: result.rows
-                                    }
-                                    ws.send(JSON.stringify(res));
-                                    ws.try = "Sign in";
-                                    SendUsers();
-                                    SendChats(id);
-
-                                }
-                            });
+                          ws.send(JSON.stringify(res));
+                          ws.try = "Sign in";
+                          SendUsers();
+                          SendChats(id);
                         }
                         else {
                            SendError("error","Data is incorrected");
@@ -238,8 +229,29 @@ wss.on('connection', ws => {
               ws.try += 1;
           }
           break;
+      case "getChatMessages":
+
+          if(req.data.user === ws.user.username) {
+              console.log(ws.user.id);
+              client.query(`Select * from members where id_chat = '${req.data.chat}' and id_user = '${ws.user.id}'`, (err, result) => {
+                  if (err) throw err;
+                  if (result.rowCount) {
+                      console.log(2)
+                      client.query(`Select m.id,u.username as user, m.date, m.text from messages m right join users u on m.user = u.id where m.chat =  '${req.data.chat}'`, (err, result) => {
+                          if(err) throw err;
+                          console.log(3)
+                          result.rows.map((message) =>  message.user = { name: message.user})
+                          let res = {
+                              type: "allmsg",
+                              chat: req.data.chat,
+                              messages: result.rows
+                          }
+                          ws.send(JSON.stringify(res));
+                      })
+                  }
+              })
+          }
       default:
-          ws.send("Чел, а ты хорош");
         // Что-то
 
     }
@@ -271,7 +283,7 @@ wss.on('connection', ws => {
     }
      function SendChats(id) {
          let data;
-         client.query(`SELECT name,username FROM chats c left join users u on c.owner = u.id`, (err, result) => {
+         client.query(`SELECT c.id as chat,name,u.username as owner,u2.username as lastMessage,text,date FROM chats c left join users u on c.owner = u.id inner join users u2 right join messages on u2.id = messages.user on c.id = messages.chat where messages.id in (Select id from messages where chat = c.id order by id DESC limit 1) `, (err, result) => {
              if(err) throw err;
              if(result.rowCount) {
 
@@ -306,8 +318,8 @@ function VerifingUser (token, res) {
     if(user) {
         res.redirect("http://localhost:3000");
         client.query(`
-                  INSERT INTO users(username, login, password)
-                  VALUES ('${user.data.username}', '${user.data.login}', '${user.data.password}')`,
+                  INSERT INTO users(username, login, password,email)
+                  VALUES ('${user.data.username}', '${user.data.login}', '${user.data.password}','${user.data.email}')`,
             (err, result) => {
                 if (err) throw err;
 
@@ -322,14 +334,6 @@ function VerifingUser (token, res) {
     return check;
 }
 
-async function getMessages(id) {
-    await client.query(`Select * from messages where chat = ${id}`, (err, result) => {
-        if (err) throw err;
-        if (result.rowCount) {
-            return result;
-        }
-    })
-}
 function GenerateToken() {
     const chars =
         "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";

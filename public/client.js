@@ -1,2 +1,2 @@
-import "./scripts/builder.js"
+import "./scripts/classes/builder.js"
 import "./scripts/script.js"
