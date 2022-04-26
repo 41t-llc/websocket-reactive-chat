@@ -13,7 +13,7 @@
       <article class="center">
         <h2 >Ваши чаты</h2>
       </article>
-      <button id="addChat" class="fixed bottom center">Добавить чат</button>
+      <button id="addChatButton" class="absolute center p">Добавить чат</button>
     </section>
     <article id="condition" class="grid grid-col-4 d-n">
       <button class="center" id="menu">
@@ -58,7 +58,7 @@
       <input type="password" class="p" name="password" autocomplete="off" placeholder="Password">
       <button class="p">Sign in</button>
     </form>
-    <button onclick="authFormSwitch();" class="m">Sign up</button>
+    <button class="m formSwitch">Sign up</button>
   </article>
 
   <article class="signup d-n ai-c jc-c flex-dir-col">
@@ -70,7 +70,7 @@
       <input type="password" name="confirmPassword" class="p" autocomplete="off" placeholder="Confirm password">
       <button class="p">Sign up</button>
     </form>
-    <button onclick="authFormSwitch();" class="m">Sign in</button>
+    <button  class="formSwitch m">Sign in</button>
   </article>
     <section class="absolute blockSettings full-screen" style="display: none">
       <section class="settings grid gap-30 flex-column ">
@@ -96,10 +96,13 @@
     <section class="grid addChat absolute full-screen d-n">
       <section class="grid gap-30">
           <h3 class="center ">Добавить чат</h3>
-          <form action="#" class="grid gap-15" name="addChat">
-            <input type="text" placeholder="Название чата" name="chatName">
-            <input type="text" placeholder="Придумайте ссылку(не обязательно)" name="url">
-            <input type="submit">
+        <input type="checkbox" hidden id="toggleUrl">
+          <form action="#" class="grid gap-15 jc-c" name="addChat">
+            <input type="text" class="p" placeholder="Название чата" name="chatName">
+
+            <label for="toggleUrl">Создать свою ссылку</label>
+            <input type="text" class="p" placeholder="Ссылка" name="url" id="url">
+            <button class="p">Добавить</button>
           </form>
       </section>
     </section>

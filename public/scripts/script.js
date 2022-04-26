@@ -1,9 +1,20 @@
 import chatInfo from "./classes/chatInfo.js";
 import Builder from "./classes/builder.js";
 if(window.location.search) {
-  if(confirm("Ваш токен просрочен, пожалуйста пройдите регистрацию снова")) {
-    window.location.href = window.location.url;
-  }
+     let parametrs = new URLSearchParams(window.location.search);
+     if(parametrs.get('errors')) {
+         if(confirm("Ваш токен просрочен, пожалуйста пройдите регистрацию снова")) {
+             window.location.href = window.location.origin;
+            }
+     }
+     if(parametrs.get('chat') &&  localStorage.getItem("token")) {
+        let data = {
+            url: parametrs.get('chat'),
+            user: localStorage.getItem("token")
+        }
+        fetch(`api/invite?=chat=${parametrs.get('chat')}`).finally(() => {window.location = window.location.origin});
+     }
+
 }
 /*
 * Хранить загруженные сообщения в сессии
@@ -30,6 +41,8 @@ async function app() {
         censored = document.querySelector('#censored'),
         signin = document.querySelector('article.signin'),
         signup = document.querySelector('article.signup'),
+        addChat = document.querySelector('.addChat'),
+        switcherForms = document.querySelectorAll('.formSwitch'),
         forms = document.forms,
         user = {},
         messages = [],
@@ -169,11 +182,13 @@ async function app() {
                 name: this.chatName.value,
                 url: this.url.value
             }
+            console.log(message);
             ws.send(JSON.stringify(message));
         }
         else {
             alert("Вы не ввели название чата");
         }
+        return false;
     }
 
     forms['signup'].onsubmit = function () {
@@ -195,12 +210,18 @@ async function app() {
         }
         return false;
     }
+    Object.keys(switcherForms).map(x => {
+
+            switcherForms[x].addEventListener('click', builder.authFormSwitch);
+        });
+
+
 
     censored.onchange = () => {
         while (chat.firstChild) {
             chat.removeChild(chat.firstChild);
         }
-        messages.map(x => builder.createMessage(chat, x));
+        messages.map(x => builder.createMessage(x));
     }
 
     document.querySelector('#themeSwitch').onchange = (e) => {
@@ -219,6 +240,7 @@ async function app() {
         document.querySelector('.blockSettings').style.display = 'none';
         blockInfo.classList.add("d-n");
         chatList.classList.remove("active");
+        addChat.classList.add('d-n');
         this.classList.toggle("d-n");
     }
     settings.onclick = () => {
@@ -230,7 +252,10 @@ async function app() {
     menu.onclick = () => {
         blockClose.classList.toggle("d-n");
         chatList.classList.toggle("active");
-
+    }
+    addChatButton.onclick = () => {
+        addChat.classList.toggle('d-n');
+        chatList.classList.toggle("active");
     }
 
     function ShowUsers(listUsers) {
@@ -276,5 +301,15 @@ async function app() {
         forms['message'].style.display = 'grid';
         chat.style.display = 'block';
     }
+    function authFormSwitch() {
+        let signin = document.querySelector('article.signin'),
+            signup = document.querySelector('article.signup');
+
+        signin.classList.toggle('flex');
+        signin.classList.toggle('d-n');
+        signup.classList.toggle('flex');
+        signup.classList.toggle('d-n');
+    }
 }
+
 app();

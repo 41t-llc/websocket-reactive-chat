@@ -131,6 +131,15 @@ class BuilderClass {
             this.chatListContainer.append(chat);
         })
     }
+    authFormSwitch() {
+        let signin = document.querySelector('article.signin'),
+            signup = document.querySelector('article.signup');
+
+        signin.classList.toggle('flex');
+        signin.classList.toggle('d-n');
+        signup.classList.toggle('flex');
+        signup.classList.toggle('d-n');
+    }
 
     createForms() {
 
@@ -188,15 +197,7 @@ class BuilderClass {
 
 
 
-function authFormSwitch() {
-    let signin = document.querySelector('article.signin'),
-        signup = document.querySelector('article.signup');
 
-    signin.classList.toggle('flex');
-    signin.classList.toggle('d-n');
-    signup.classList.toggle('flex');
-    signup.classList.toggle('d-n');
-}
 
 
 

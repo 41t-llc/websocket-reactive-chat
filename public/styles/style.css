@@ -125,9 +125,11 @@ button {
 .grid.grid-70-1 {
     grid-template-columns: 110px 1fr;
 }
+
 .grid.grid-a-1-a {
     grid-template-columns: auto 1fr auto;
 }
+
 body.grid.grid-row-3 {
     grid-template-rows: 50px 1fr 60px;
 }
@@ -158,13 +160,16 @@ body.grid.grid-row-3 {
 .flex.gap-30 {
     gap: 30px;
 }
+
 .grid.gap-5,
 .flex.gap-5 {
     gap: 5px;
 }
+
 .flex.jc-sb {
     justify-content: space-between;
 }
+
 .d-n {
     display: none;
 }
@@ -184,7 +189,12 @@ body.grid.grid-row-3 {
 .fixed.bottom {
     bottom: 0;
 }
-
+#addChatButton {
+    bottom: 1vw;
+    left: 0;
+    right: 0;
+    width: 100%;
+}
 .success {
     color: var(--ind-color-success);
     background-color: var(--ind-color-success);
@@ -302,7 +312,8 @@ buttonSettings svg,
 
 /* Стили для окна с настройками*/
 .settings,
-.info {
+.info,
+.addChat > section {
     position: absolute;
     padding: 50px;
     opacity: 1;
@@ -347,7 +358,9 @@ buttonSettings svg,
     left: 0;
 }
 
-.white .settings {
+.white .settings,
+.white .info,
+.white .addChat > section {
     background-color: #fff;
     border: 2px solid #0005;
 }
@@ -406,10 +419,10 @@ buttonSettings svg,
 }
 
 .settings input[type='checkbox']:checked + label .slider:before {
-    -webkit-transform: translateX(1em);
-    -ms-transform: translateX(1em);
+    -webkit-transform: translateX(1.15em);
+    -ms-transform: translateX(1.15em);
     background-color: #88FF4B;
-    transform: translateX(1em);
+    transform: translateX(1.15em);
 
 }
 
@@ -512,7 +525,8 @@ form[name="signup"] {
 }
 
 form[name="signin"] input,
-form[name="signup"] input {
+form[name="signup"] input,
+form[name='addChat'] input {
     background-color: var(--msg-bgc);
     color: var(--msg-color);
     -webkit-text-fill-color: var(--msg-color);
@@ -527,7 +541,8 @@ form[name="signup"] input {
 }
 
 form[name="signin"] > button,
-form[name="signup"] > button {
+form[name="signup"] > button,
+form[name='addChat'] > button {
     background-color: var(--msg-btn-bgc);
     color: var(--msg-color);
     border: none;
@@ -537,17 +552,27 @@ form[name="signup"] > button {
 }
 
 body.white form[name="signin"] > button,
-body.white form[name="signup"] > button {
+body.white form[name="signup"] > button,
+body.white form[name='addChat'] > button {
     color: #fff;
 }
 
 form[name="signin"] > button:hover,
 form[name="signin"] > button:focus,
 form[name="signup"] > button:hover,
-form[name="signup"] > button:focus {
+form[name="signup"] > button:focus,
+form[name='addChat'] > button:focus,
+form[name='addChat'] > button:hover {
     background-color: var(--msg-btn-hover-bgc);
 }
 
+input#url {
+display: none;
+}
+
+#toggleUrl:checked + form > input#url {
+    display: block;
+}
 @media screen and (max-width: 1220px) {
     body.white {
         --fz: 16px;
@@ -607,26 +632,24 @@ form[name="signup"] > button:focus {
 
     form[name="signup"] > button,
     form[name="signin"] > button,
-    form[name="message"] > button {
+    form[name="message"] > button,
+    form[name='addChat'] > button {
         background-color: var(--msg-btn-hover-bgc);
     }
 }
 
 #chatsList {
     z-index: -5;
-    padding: 0 1vw;
     width: 0;
     grid-row-start: 1;
     grid-row-end: 4;
     opacity: 0;
-    animation-duration: 1s;
-    animation-iteration-count: 1;
-    animation-direction: reverse;
-}
 
+}
 #chatsList.active {
     animation-name: toggleChats;
     animation-duration: 1s;
+    padding: 0 1vw;
     background: var(--body-bgc);
     overflow-x: hidden;
     opacity: 1;
@@ -643,21 +666,6 @@ form[name="signup"] > button:focus {
     padding-bottom: 20px;
 }
 
-/*#chatsList {*/
-/*  animation-name: toggleChats;*/
-/*  animation-duration: 2s;*/
-/*  animation-iteration-count: 1;*/
-/*  animation-fill-mode: forwards;*/
-/*  animation-direction: reverse;*/
-/*}*/
-/*#chatsList.active {*/
-/*  animation-name: toggleChats;*/
-/*  animation-duration: 3s;*/
-/*  overflow-x: hidden;*/
-/*  animation-iteration-count: 1;*/
-/*  animation-fill-mode: forwards;*/
-/*  animation-direction: normal;*/
-/*}*/
 #chatsList::-webkit-scrollbar {
     height: 10px;
 }
@@ -709,9 +717,7 @@ form[name="signup"] > button:focus {
     20% {
         opacity: 1;
     }
-    30% {
 
-    }
     100% {
         width: 250px;
     }

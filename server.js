@@ -21,17 +21,22 @@ app.get("/api/verify", (req, res) => {
     VerifingUser(req.query.token, res);
 
 })
+app.post("/api/invite", (req,res) => {
+    console.log(req.body)
+
+})
 app.listen(PORT+1);
 // WebSocket
 const { Server } = require('ws');
 const wss = new Server({server});
 // Transporter
 const transporter = nodeMailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
+    host: "smtp.yandex.ru",
+    port: 465,
+    secure: true,
     auth: {
         user: process.env["MAIL_USER"],
-        pass: process.env["MAIL_USER"]
+        pass: process.env["MAIL_PASS"]
     }
 });
 
@@ -361,3 +366,4 @@ async function CheckEmail(email) {
     }
     return check;
 }
+
