@@ -13,6 +13,7 @@ class BuilderClass {
     }
 
     createMessage(data) {
+        console.log(data);
         let container = this.container,
             children = container.children,
             datemsg = this.translateDate(data.date),
@@ -65,15 +66,8 @@ class BuilderClass {
     createStartView() {
         if (this.chat === null) {
             let chat = document.getElementById("chat");
-            chat.classList.add("center");
-            // fetch('views/temlates/test.html')
-            //     .then(response=> response.text())
-            //     .then(text=> console.log(text));
-            // var xmlhttp = new XMLHttpRequest();
-            // xmlhttp.open("GET", "views/temlates/test.html", false);
-            // xmlhttp.send();
-            // console.log(xmlhttp)
-            // chat.innerHTML = xmlhttp.responseText;
+            // chat.innerHTML = '<startView></startView>'
+            // import('../views/startView.js');
 
         } else {
             this.createChat(this.chat);
@@ -106,6 +100,7 @@ class BuilderClass {
         }
         this.chatList.map(x => {
             if (x.chat === this.chat) {
+
                 this.chatinfo.name = x.name;
                 this.chatinfo.owner = x.owner;
             }
@@ -171,7 +166,6 @@ class BuilderClass {
 
     set user(data) {
         if (data !== null) {
-            console.log(data);
             this.#user = data;
         }
     }

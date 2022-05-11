@@ -40,7 +40,12 @@
 
     </article>
 
-    <section id="chat" class="p m"></section>
+    <section id="chat" class="p m">
+      <section v-for="messages">
+          <p v-model="messageText"></p>
+          <p v-model="owner"></p>
+      </section>
+    </section>
 
     <form name="message" class="grid grid-col-2 gap p">
       <input name="text" placeholder="Message" class="p" autocomplete="off">
@@ -87,8 +92,8 @@
     <section class="absolute infoBlock full-screen grid d-n"  id="info">
       <section class="grid gap-30 info">
         <h2 class="ta-c">Информация</h2>
-          <p><span>Название чата:</span>  <span id="chat_name"></span></p>
-          <p>Владелец чата: <span id="chat_owner"></span></p>
+          <p><span>Название чата:</span>  <span v-model="name"></span></p>
+          <p>Владелец чата: <span v-model="owner"></span></p>
           <h3 class="m-a fz-0.5">Активные пользователи</h3>
         <article class="flex flex-dir-col gap-15" id="users"> </article>
         </section>

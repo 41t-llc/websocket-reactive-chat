@@ -144,6 +144,7 @@ wss.on('connection', ws => {
             req.username = req.username.replace('/\w/g',(match) => ("\\" + match));
             req.login = req.login.replace('/\w/g',(match) => ("\\" + match));
             req.password = req.password.replace('/\w/g',(match) => ("\\" + match));
+            let query = client.query(`Select * from users where login = ${req.login} or email = req.email` )
           bcrypt.hash(req.password, saltRounds,(err,hash) => {
             if(err) throw err;
             if(CheckEmail(req.email)) {

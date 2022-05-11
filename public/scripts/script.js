@@ -1,5 +1,6 @@
 import chatInfo from "./classes/chatInfo.js";
 import Builder from "./classes/builder.js";
+import Wathcer from "./watcher.js"
 if(window.location.search) {
      let parametrs = new URLSearchParams(window.location.search);
      if(parametrs.get('errors')) {
@@ -19,6 +20,8 @@ if(window.location.search) {
 /*
 * Хранить загруженные сообщения в сессии
 * */
+
+
 
 async function app() {
 
@@ -44,12 +47,31 @@ async function app() {
         addChat = document.querySelector('.addChat'),
         switcherForms = document.querySelectorAll('.formSwitch'),
         forms = document.forms,
-        user = {},
+        user = new Wathcer({
+            name: null,
+        }),
         messages = [],
         d = null,
         connectionTries = null;
+    let messagesTest = new Wathcer({
+        messages: [{
+            messageText: null,
+            owner: null
+        }]
+    });
+    messagesTest.messages = [{
+        messageText: "Tetatastast",
+        owner: "taetaet"
+    },
+        { messageText: "Tetatastast1",
+            owner: "taetaet2"}
+    ];
     builder.container = document.querySelector('#chat');
-    builder.chatinfo = new chatInfo();
+    builder.chatinfo = new Wathcer({
+        owner: null,
+        name: null,
+        activeUsers: []
+    });
 
     localStorage.getItem("theme") === "black" ? theme.checked = true : theme.checked = false;
     body.classList.add(localStorage.getItem("theme") || "white");
@@ -87,7 +109,8 @@ async function app() {
                 break;
 
             case 'signin':
-                user = message.user;
+                user.data = message.user;
+
                 builder.user = user;
                 builder.ws = ws
                 builder.createStartView();
@@ -103,7 +126,7 @@ async function app() {
 
             case 'allmsg':
                 messages = message.messages;
-                sessionStorage.setItem(messages[0].chat, messages);
+
                 message.messages.map((msg) => {
                     builder.createMessage(msg);
                 });
@@ -125,7 +148,7 @@ async function app() {
                 break;
             case 'chats':
                 builder.renderChats(message.data);
-                console.log(message);
+
             default:
             // Что-то
 
@@ -182,7 +205,7 @@ async function app() {
                 name: this.chatName.value,
                 url: this.url.value
             }
-            console.log(message);
+
             ws.send(JSON.stringify(message));
         }
         else {
@@ -264,7 +287,7 @@ async function app() {
         }
         listUsers.forEach(user => {
             users.innerHTML += `
-      <div> ${user}</div>
+      <div v-model="name"></div>
     `
         })
     }
