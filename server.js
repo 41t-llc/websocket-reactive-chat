@@ -4,7 +4,7 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const saltRounds = 12;
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 const nodeMailer = require('nodemailer');
 const INDEX = '/views/index.html';
 const server = express()

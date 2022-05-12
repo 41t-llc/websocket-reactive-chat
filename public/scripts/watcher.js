@@ -60,21 +60,30 @@ function Watcher (dataObj) {
     function syncNodeArray (node, observable, property) {
 
         node.forEach(el => {
-            Array.from(el.children).forEach(data => {
-
+            const block =  el.cloneNode(true);
+            block.removeAttribute('v-for');
+                console.log(block)
                 observable[property].forEach(dataEl => {
+                    let newBlock = block.cloneNode(true);
+
                     for(let key in dataEl) {
-                        console.log(dataEl)
-                        el.querySelectorAll(`[v-model = ${key}]`).forEach(x => {
-                            x.textContent = dataEl[key];
+                        // console.log(dataEl)
+                        console.log(newBlock.querySelectorAll(`[v-model = ${key}]`))
+                        newBlock.querySelectorAll(`[v-model = ${key}]`).forEach((x) => {
+                            observe(key, () => x.textContent = dataEl[key])
+                            x.textContent += dataEl[key];
+
                         }) ;
+                        
+                        el.append(newBlock);
+
                     }
                 })
 
-            })
+
         })
 
-        observe(property, () => node.textContent = observable[property])
+
     }
 
     function parseDOM (node, observable) {
