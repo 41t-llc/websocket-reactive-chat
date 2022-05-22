@@ -31,7 +31,7 @@ const { Server } = require('ws');
 const wss = new Server({server});
 // Transporter
 const transporter = nodeMailer.createTransport({
-    host: "smtp.yandex.ru",
+    host: "smtp.mail.ru",
     port: 465,
     secure: true,
     auth: {
@@ -66,7 +66,7 @@ wss.on('connection', ws => {
                       client.query(`INSERT INTO messages("user",chat,date,text) VALUES (${result.rows[0].id},'${req.chat}','${curdate}','${req.text.replace('/\w/g',(match) => ("\\" + match))}')`,
                           (err, result) => {
                           if (err) throw err;
-                              console.log(result);
+
                       });
                       let res = {
                           type: 'msg',
@@ -144,80 +144,92 @@ wss.on('connection', ws => {
             req.username = req.username.replace('/\w/g',(match) => ("\\" + match));
             req.login = req.login.replace('/\w/g',(match) => ("\\" + match));
             req.password = req.password.replace('/\w/g',(match) => ("\\" + match));
-            let query = client.query(`Select * from users where login = ${req.login} or email = req.email` )
-          bcrypt.hash(req.password, saltRounds,(err,hash) => {
-            if(err) throw err;
-            if(CheckEmail(req.email)) {
-                let user = {
-                    data: {
-                        username: req.username,
-                        login: req.login,
-                        email: req.email,
-                        password: hash
-                    },
-                    verifyToken: GenerateToken(),
-                    timeOut: setTimeout(() => {
-                        console.log("Delete User");
-                        delete UsersForVerify[this.verifyToken];
-                    }, 1800000)
+
+            client.query(`Select * from users where 'login' = '${req.login}' or 'email' = '${req.email}'`, (err,result) => {
+                if(err) throw err;
+                if(result.rowCount === 0) {
+                    bcrypt.hash(req.password, saltRounds,(err,hash) => {
+                        if(err) throw err;
+
+                        if(CheckEmail(req.email)) {
+
+                            let user = {
+                                data: {
+                                    username: req.username,
+                                    login: req.login,
+                                    email: req.email,
+                                    password: hash
+                                },
+                                verifyToken: GenerateToken(),
+                                timeOut: setTimeout(() => {
+                                    console.log("Delete User");
+                                    delete UsersForVerify[this.verifyToken];
+                                }, 1800000)
+                            }
+                            UsersForVerify[user.verifyToken] = user;
+                            console.log("User add in list");
+                  //           transporter.sendMail({
+                  //               from: process.env.mail,
+                  //               to: req.email,
+                  //               subject: "GPT VERIFY",
+                  //               html: `
+                  // <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+                  //   <html lang="en">
+                  //       <head>
+                  //           <meta charset="UTF-8">
+                  //           <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+                  //           <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                  //           <title>MAIL</title>
+                  //
+                  //           <style>
+                  //           * {
+                  //               padding: 0;
+                  //               margin: 0;
+                  //           }
+                  //
+                  //           body {
+                  //               border-radius: 20px;
+                  //               background-color: #FFFAAF
+                  //           }
+                  //
+                  //           a {
+                  //               text-decoration: none;
+                  //               font-size: 25px;
+                  //           }
+                  //           table {
+                  //               width: 100%;
+                  //           }
+                  //           </style>
+                  //       </head>
+                  //       <body>
+                  //       <table>
+                  //           <tr style="min-height: 50px; background-color: #bdbbbb">
+                  //               <td style="font-size: 40px; text-align: center">GPT GROUP</td>
+                  //           </tr>
+                  //           <tr>
+                  //               <td>
+                  //                   <span> Я люблю когда ссылки адекватны и мне нравятся
+                  //                       <a href="http://localhost:3001/api/verify?token=${user.verifyToken}">верификация</a>
+                  //                   </span>
+                  //               </td>
+                  //           </tr>
+                  //       </table>
+                  //       </body>
+                  //   </html>
+                  //   `
+                  //           }, (err) => {
+                  //               if(err) console.log('error');
+                  //           })
+                        }
+                        else {
+                            console.log("dont add")
+                           SendError('error','Этот логин или эл.почта ужже используется')
+                        }
+                    })
+
                 }
-                UsersForVerify[user.verifyToken] = user;
-                console.log("User add in list");
-                transporter.sendMail({
-                    from: process.env.mail,
-                    to: req.email,
-                    subject: "GPT VERIFY",
-                    html: `
-                  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-                    <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-                            <meta http-equiv="X-UA-Compatible" content="ie=edge">
-                            <title>MAIL</title>
-                     
-                            <style>
-                            * {
-                                padding: 0;
-                                margin: 0;
-                            }
-                            
-                            body {    
-                                border-radius: 20px;
-                                background-color: #FFFAAF
-                            }
-                            
-                            a {
-                                text-decoration: none;
-                                font-size: 25px;
-                            }
-                            table {
-                                width: 100%;
-                            }
-                            </style>
-                        </head>
-                        <body>
-                        <table>
-                            <tr style="min-height: 50px; background-color: #bdbbbb">
-                                <td style="font-size: 40px; text-align: center">GPT GROUP</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span> Я люблю когда ссылки адекватны и мне нравятся 
-                                        <a href="http://localhost:3001/api/verify?token=${user.verifyToken}">верификация</a>
-                                    </span>
-                                </td>
-                            </tr>
-                        </table>
-                        </body>
-                    </html>
-                    `
-                })
-            }
-            else {
-                console.log("Такой пользователь уже есть");
-            }
-          })
+            } )
+
 
         }
         break;
@@ -349,19 +361,22 @@ function GenerateToken() {
     );
     return randomArray.join("");
 }
-async function CheckEmail(email) {
+ function CheckEmail(email) {
     let check = true;
-    await client.query(`Select id from users where email = '${email}'`, (err, result) => {
+
+     client.query(`Select id from users where email = '${email}'`, (err, result) => {
         if(err) throw err;
         if(result.rowCount) {
-            check = false;
+            return false;
         }
     });
+
     for (let x in UsersForVerify) {
         let y = UsersForVerify[x];
+        console.log(UsersForVerify)
         if(y.data['email'] === email) {
-            check = false;
-            break;
+            return false;
+
         }
 
     }

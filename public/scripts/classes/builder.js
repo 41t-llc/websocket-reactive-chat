@@ -66,8 +66,8 @@ class BuilderClass {
     createStartView() {
         if (this.chat === null) {
             let chat = document.getElementById("chat");
-            // chat.innerHTML = '<startView></startView>'
-            // import('../views/startView.js');
+            chat.innerHTML = '<startView></startView>'
+            import('../views/startView.js');
 
         } else {
             this.createChat(this.chat);
@@ -83,6 +83,7 @@ class BuilderClass {
                 let messages = sessionStorage.getItem(this.chat);
                 messages.map(x => this.createMessage(chat))
             }
+
             let res = {
                 type: "getChatMessages",
                 data: {
@@ -90,6 +91,7 @@ class BuilderClass {
                     user: this.user.name
                 }
             }
+
             this.ws.send(JSON.stringify(res));
             this.currentChat = data;
             let chat = document.getElementById("chat");

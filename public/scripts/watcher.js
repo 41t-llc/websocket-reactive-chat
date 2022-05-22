@@ -1,40 +1,50 @@
-function Watcher (dataObj) {
-    let signals = {};
+function Watcher(dataObj) {
+    let signals = {},
+        structures = [];
+
     observeData(dataObj)
 
-    return Object.create(dataObj,observe,notify)
+    return Object.create(dataObj, observe, notify)
 
-    function observe (property, signalHandler) {
-        if(!signals[property]) signals[property] = []
+    function observe(property, signalHandler) {
+        if (!signals[property]) signals[property] = []
 
         signals[property].push(signalHandler)
     }
 
-    function notify (signal) {
-        if(!signals[signal] || signals[signal].length < 1) return
+    function notify(signal) {
+        if (!signals[signal] || signals[signal].length < 1) return
 
         signals[signal].forEach((signalHandler) => {
-            signalHandler()})
+            signalHandler()
+        })
 
     }
 
-    function makeReactive (obj, key) {
+    function makeReactive(obj, key) {
         let val = obj[key]
         let structure;
         Object.defineProperty(obj, key, {
-            get () {
+            get() {
                 return val
             },
-            set (newVal) {
+            set(newVal) {
                 val = newVal
                 notify(key)
-                if(Array.isArray(obj[key])) syncNodeArray(document.querySelectorAll(`[v-for=${key}]`),obj,key)
-                parseDOM(document.body,obj);
+                if (Array.isArray(obj[key])) {
+                    document.querySelectorAll(`[data-for=${key}]`).forEach((x, index) => {
+                        structures[key + (index + 1)] = x.cloneNode(true);
+                    })
+
+                }
+
+
+                notify(key)
             }
         })
     }
 
-    function observeData (obj) {
+    function observeData(obj) {
 
 
         for (let key in obj) {
@@ -53,42 +63,76 @@ function Watcher (dataObj) {
         }
     }
 
-    function syncNode (node, observable, property) {
+    function syncNode(node, observable, property) {
         node.textContent = observable[property]
         observe(property, () => node.textContent = observable[property])
     }
-    function syncNodeArray (node, observable, property) {
 
-        node.forEach(el => {
-            Array.from(el.children).forEach(data => {
+    function syncNodeArray(node, observable, property, number) {
 
-                observable[property].forEach(dataEl => {
-                    for(let key in dataEl) {
-                        console.log(dataEl)
-                        el.querySelectorAll(`[v-model = ${key}]`).forEach(x => {
-                            x.textContent = dataEl[key];
-                        }) ;
-                    }
-                })
+        while (node.firstChild) {
+            node.removeChild(node.firstChild);
+        }
+        console.log("I delete all child")
 
-            })
+        observable[property].forEach((dataEl, index) => {
+
+            let newBlock = structures[property + number].cloneNode(true);
+            console.log(newBlock.children)
+            for (let key = 0; key < newBlock.children.length; key++) {
+                let child = newBlock.children[key];
+
+                if (child.hasAttribute('data-model')) {
+
+                    let attr = child.getAttribute('data-model');
+                    child.textContent = dataEl[attr];
+                }
+                console.log(child)
+                node.appendChild(child);
+            }
+
+
         })
 
-        observe(property, () => node.textContent = observable[property])
+
+        observe(property, () => {
+            console.log("test")
+        })
+
+        // observe(property, () => node.textContent = observable[property])
     }
 
-    function parseDOM (node, observable) {
+    // function copyDOM(collection) {
+    //     const newObjectDOM = {};
+    //
+    //     for(let key = 0; key < collection.length; key++) {
+    //         newObjectDOM[key] = collection[key];
+    //     }
+    //     return newObjectDOM;
+    // }
+    // function copyObject(obj) {
+    //     const newObject = {};
+    //
+    //
+    //     for(let key in obj) {
+    //         newObject[key] = obj[key];
+    //     }
+    //     return newObject;
+    // }
 
-        const nodes = document.querySelectorAll('[v-model]')
-        const Arraynodes = document.querySelectorAll('[v-for]')
+    function parseDOM(node, observable) {
+
+        const nodes = document.querySelectorAll('[data-model]')
+        const Arraynodes = document.querySelectorAll('[data-for]')
         nodes.forEach((node) => {
-            syncNode(node, observable, node.attributes['v-model'].value)
+            syncNode(node, observable, node.attributes['data-model'].value)
 
         })
         // Arraynodes.forEach((node) => {
-        //     syncNodeArray(node, observable, node.attributes['v-for'].value)
+        //     syncNodeArray(node, observable, node.attributes['data-for'].value)
         //
         // })
     }
 }
+
 export default Watcher

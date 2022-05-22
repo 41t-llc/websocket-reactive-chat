@@ -86,7 +86,7 @@ async function app() {
             }
             ws.send(JSON.stringify(data));
         }, 10000);
-        clearInterval(connectionTries);
+
     };
 
     ws.onclose = function (event) {
@@ -109,12 +109,12 @@ async function app() {
                 break;
 
             case 'signin':
-                user.data = message.user;
-
+                user = message.user;
                 builder.user = user;
                 builder.ws = ws
                 builder.createStartView();
                 showChat();
+
                 break;
 
             case 'signup':
@@ -159,8 +159,9 @@ async function app() {
         indicator.classList.add('error');
         indicator.classList.remove('success');
         sysmes.innerHTML = `<b>Система:</b>ошибка ${event.message}`;
-        connectionTries = setInterval(() => {
+        connectionTries = setTimeout (() => {
             ws = new WebSocket(HOST);
+
         }, 1000);
 
     };
@@ -287,7 +288,7 @@ async function app() {
         }
         listUsers.forEach(user => {
             users.innerHTML += `
-      <div v-model="name"></div>
+      <div data-model="name"></div>
     `
         })
     }
