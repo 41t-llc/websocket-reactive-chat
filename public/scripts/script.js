@@ -25,9 +25,8 @@ if(window.location.search) {
 
 async function app() {
 
-    let HOST = location.origin.replace(/^http/, 'ws'), //'ws://localhost:3000';
-        ws = new WebSocket(HOST),
-        body = document.body,
+    let body = document.body,
+        ws = connect(),
         builder = new Builder(),
         blockInfo = document.querySelector("#info"),
         menu = document.querySelector('#menu'),
@@ -47,12 +46,12 @@ async function app() {
         addChat = document.querySelector('.addChat'),
         switcherForms = document.querySelectorAll('.formSwitch'),
         forms = document.forms,
-        user = new Wathcer({
-            name: null,
-        }),
         messages = [],
         d = null,
-        connectionTries = null;
+        connectionTries = null,
+        user = new Wathcer({
+            name: null,
+        });
     let messagesTest = new Wathcer({
         messages: [{
             messageText: null,
@@ -75,96 +74,96 @@ async function app() {
 
     localStorage.getItem("theme") === "black" ? theme.checked = true : theme.checked = false;
     body.classList.add(localStorage.getItem("theme") || "white");
-    ws.onopen = function (event) {
-        indicator.classList.add('success');
-        indicator.classList.remove('error');
-        clearInterval(connectionTries);
-        sysmes.innerHTML = 'Соединение установлено';
-        d = setInterval(() => {
-            let data = {
-                type: "Check"
-            }
-            ws.send(JSON.stringify(data));
-        }, 10000);
-
-    };
-
-    ws.onclose = function (event) {
-        indicator.classList.add('error');
-        indicator.classList.remove('success');
-        sysmes.innerHTML = 'Соединение закрыто: <br>';
-        // TODO: Нужно ли перенести в условие?
-        sysmes.innerHTML += `<i>код: ${event.code} причина: ${event.reason}</i>`;
-    };
-
-
-    ws.onmessage = async function (event) {
-        let message = JSON.parse(event.data);
-
-        switch (message.type) {
-
-            case 'msg':
-                messages.push(message);
-                builder.createMessage(message);
-                break;
-
-            case 'signin':
-                user = message.user;
-                builder.user = user;
-                builder.ws = ws
-                builder.createStartView();
-                showChat();
-
-                break;
-
-            case 'signup':
-                user = message.user;
-                signup.classList.add('d-n');
-                signin.classList.remove('flex');
-                signup.classList.remove('flex');
-                break;
-
-            case 'allmsg':
-                messages = message.messages;
-
-                message.messages.map((msg) => {
-                    builder.createMessage(msg);
-                });
-                break;
-
-            case 'activityUsers':
-                ShowUsers(message.activityUsers);
-                break;
-
-            case 'error':
-                alert(message.error)
-                break;
-
-            case 'close':
-                if (!confirm("Вы не успели войти в систему")) {
-                    ws.close();
-                    clearInterval(d);
-                }
-                break;
-            case 'chats':
-                builder.renderChats(message.data);
-
-            default:
-            // Что-то
-
-        }
-    };
-
-    ws.onerror = function (event) {
-        indicator.classList.add('error');
-        indicator.classList.remove('success');
-        sysmes.innerHTML = `<b>Система:</b>ошибка ${event.message}`;
-        connectionTries = setTimeout (() => {
-            ws = new WebSocket(HOST);
-
-        }, 1000);
-
-    };
+    // ws.onopen = function (event) {
+    //     indicator.classList.add('success');
+    //     indicator.classList.remove('error');
+    //
+    //     sysmes.innerHTML = 'Соединение установлено';
+    //     console.log("kek");
+    //     d = setInterval(() => {
+    //         let data = {
+    //             type: "Check"
+    //         }
+    //         ws.send(JSON.stringify(data));
+    //     }, 10000);
+    //
+    //
+    // };
+    //
+    // ws.onclose = function (event) {
+    //     indicator.classList.add('error');
+    //     indicator.classList.remove('success');
+    //     sysmes.innerHTML = 'Соединение закрыто: <br>';
+    //     // TODO: Нужно ли перенести в условие?
+    //     sysmes.innerHTML += `<i>код: ${event.code} причина: ${event.reason}</i>`;
+    // };
+    //
+    //
+    // ws.onmessage = async function (event) {
+    //     let message = JSON.parse(event.data);
+    //
+    //     switch (message.type) {
+    //
+    //         case 'msg':
+    //             messages.push(message);
+    //             builder.createMessage(message);
+    //             break;
+    //
+    //         case 'signin':
+    //             user = message.user;
+    //             builder.user = user;
+    //             builder.ws = ws
+    //             builder.createStartView();
+    //             showChat();
+    //
+    //             break;
+    //
+    //         case 'signup':
+    //             user = message.user;
+    //             signup.classList.add('d-n');
+    //             signin.classList.remove('flex');
+    //             signup.classList.remove('flex');
+    //             break;
+    //
+    //         case 'allmsg':
+    //             messages = message.messages;
+    //
+    //             message.messages.map((msg) => {
+    //                 builder.createMessage(msg);
+    //             });
+    //             break;
+    //
+    //         case 'activityUsers':
+    //             ShowUsers(message.activityUsers);
+    //             break;
+    //
+    //         case 'error':
+    //             alert(message.error)
+    //             break;
+    //
+    //         case 'close':
+    //             if (!confirm("Вы не успели войти в систему")) {
+    //                 ws.close();
+    //                 clearInterval(d);
+    //             }
+    //             break;
+    //         case 'chats':
+    //             builder.renderChats(message.data);
+    //
+    //         default:
+    //         // Что-то
+    //
+    //     }
+    // };
+    //
+    // ws.onerror =  function (event) {
+    //     indicator.classList.add('error');
+    //     indicator.classList.remove('success');
+    //     sysmes.innerHTML = `<b>Система:</b>ошибка ${event.message}`;
+    //     connectionTries =  setInterval ( () => {
+    //         ws.readyState === 1 ? clearInterval(connectionTries) : ws = new WebSocket(HOST);
+    //        }, 5000);
+    // };
 
     forms['message'].onsubmit = function () {
         if (this.text.value.trim() !== '' &&
@@ -275,6 +274,7 @@ async function app() {
     }
     menu.onclick = () => {
         blockClose.classList.toggle("d-n");
+        body.classList.toggle('gap-15');
         chatList.classList.toggle("active");
     }
     addChatButton.onclick = () => {
@@ -334,6 +334,103 @@ async function app() {
         signup.classList.toggle('flex');
         signup.classList.toggle('d-n');
     }
+
+    function connect() {
+        let HOST = location.origin.replace(/^http/, 'ws'), //'ws://localhost:3000';
+            ws = new WebSocket(HOST);
+
+        ws.addEventListener('open',onOpen)
+        ws.addEventListener('message',onMessage)
+        ws.addEventListener('close',onClose)
+        ws.addEventListener('error', onError)
+        return ws;
+    }
+    function onMessage(event) {
+        let message = JSON.parse(event.data);
+
+        switch (message.type) {
+
+            case 'msg':
+                messages.push(message);
+                builder.createMessage(message);
+                break;
+
+            case 'signin':
+                user = message.user;
+                builder.user = user;
+                builder.ws = ws
+                builder.createStartView();
+                showChat();
+
+                break;
+
+            case 'signup':
+                user = message.user;
+                signup.classList.add('d-n');
+                signin.classList.remove('flex');
+                signup.classList.remove('flex');
+                break;
+
+            case 'allmsg':
+                messages = message.messages;
+
+                message.messages.map((msg) => {
+                    builder.createMessage(msg);
+                });
+                break;
+
+            case 'activityUsers':
+                ShowUsers(message.activityUsers);
+                break;
+
+            case 'error':
+                alert(message.error)
+                break;
+
+            case 'close':
+                if (!confirm("Вы не успели войти в систему")) {
+                    ws.close();
+                    clearInterval(d);
+                }
+                break;
+            case 'chats':
+                builder.renderChats(message.data);
+
+            default:
+            // Что-то
+
+        }
+    }
+    function onError(event) {
+        indicator.classList.add('error');
+        indicator.classList.remove('success');
+        sysmes.innerHTML = `<b>Система:</b>ошибка ${event.message}`;
+        connectionTries =  setInterval ( () => {
+            ws.readyState === 1 ? clearInterval(connectionTries) : ws = connect();
+        }, 5000);
+    }
+    function onOpen(event) {
+        indicator.classList.add('success');
+        indicator.classList.remove('error');
+
+        sysmes.innerHTML = 'Соединение установлено';
+        console.log("kek");
+        d = setInterval(() => {
+            let data = {
+                type: "Check"
+            }
+            ws.send(JSON.stringify(data));
+        }, 10000);
+    }
+    function onClose(event) {
+        indicator.classList.add('error');
+        indicator.classList.remove('success');
+        sysmes.innerHTML = 'Соединение закрыто: <br>';
+
+        sysmes.innerHTML += `<i>код: ${event.code} - Обратитесь в технику безопасности</i>`;
+    }
+
 }
+
 
 app();

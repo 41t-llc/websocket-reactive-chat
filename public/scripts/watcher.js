@@ -31,15 +31,6 @@ function Watcher(dataObj) {
             set(newVal) {
                 val = newVal
                 notify(key)
-                if (Array.isArray(obj[key])) {
-                    document.querySelectorAll(`[data-for=${key}]`).forEach((x, index) => {
-                        structures[key + (index + 1)] = x.cloneNode(true);
-                    })
-
-                }
-
-
-                notify(key)
             }
         })
     }
@@ -124,10 +115,15 @@ function Watcher(dataObj) {
 
         const nodes = document.querySelectorAll('[data-model]')
         const Arraynodes = document.querySelectorAll('[data-for]')
+
+        Arraynodes.forEach(nodes => {
+            syncNodeArray(nodes,observable,nodes.getAttribute('data-for'))
+            })
         nodes.forEach((node) => {
             syncNode(node, observable, node.attributes['data-model'].value)
 
         })
+
         // Arraynodes.forEach((node) => {
         //     syncNodeArray(node, observable, node.attributes['data-for'].value)
         //

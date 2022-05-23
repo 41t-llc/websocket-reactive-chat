@@ -56,16 +56,16 @@ wss.on('connection', ws => {
     switch (req.type) {
       case 'msg':
         if (req.text.trim() !== "" &&
-            req.user.name !== "") {
+            req.user.name !== "" && req.chat && req.chat.trim() !== '') {
 
               client.query(`SELECT id FROM users WHERE username = '${req.user.name}'`, (err, result) => {
-                  if (err) throw err;
+                  if (err) SendError('error','Пользователь не найден');
                   if (result.rowCount) {
                       let date = new Date(),
                           curdate = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.toLocaleTimeString();
                       client.query(`INSERT INTO messages("user",chat,date,text) VALUES (${result.rows[0].id},'${req.chat}','${curdate}','${req.text.replace('/\w/g',(match) => ("\\" + match))}')`,
                           (err, result) => {
-                          if (err) throw err;
+                          if (err) SendError("error",'Чат не найден');
 
                       });
                       let res = {
@@ -84,6 +84,9 @@ wss.on('connection', ws => {
 
 
                }
+        else {
+            SendError("error",'Данных не хватает для добавление записи');
+        }
         break;
 
       case 'signin':
