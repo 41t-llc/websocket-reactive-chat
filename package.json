@@ -17,6 +17,7 @@
     "bcrypt": "^5.0.1",
     "dotenv": "^15.0.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "nodemailer": "^6.7.2",
     "pg": "^8.5.1",
     "three": "^0.140.0",
