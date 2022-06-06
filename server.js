@@ -454,7 +454,7 @@ wss.on('connection', ws => {
 // #TODO Перед коммитом не забывайте включить ssl
 const {Client} = require('pg');
 const {json} = require("express");
-const client = new Client({ 'postgres://sxdbjmmsesbvoy:5a2ea0bcad59ce3d78b027a9d89c7a55e465eac7b7b5e0eca02d69154862da45@ec2-54-155-99-116.eu-west-1.compute.amazonaws.com:5432/d9568fkdl83kkt'
+const client = new Client({
     connectionString: process.env.DATABASE_URL || "postgres://user:password@localhost:5432/websocketapp",
     // ssl: { rejectUnauthorized: false}
 });
