@@ -1,23 +1,7 @@
 import Builder from "./classes/builder.js";
 import Watcher from "./watcher.js"
 
-if (window.location.search) {
-    let parametrs = new URLSearchParams(window.location.search);
-    if (parametrs.get('errors')) {
-        if (confirm("Ваш токен просрочен, пожалуйста пройдите регистрацию снова")) {
-            window.location.href = window.location.origin;
-        }
-    }
-    if (parametrs.get('chat') && localStorage.getItem("token")) {
-        let data = {
-            url: parametrs.get('chat'),
-            user: localStorage.getItem("token")
-        }
-        fetch(`api/invite?=chat=${parametrs.get('chat')}`).finally(() => {
-            window.location = window.location.origin
-        });
-    }
-}
+
 
 async function app() {
 
@@ -299,7 +283,7 @@ async function app() {
     function connect() {
         let HOST = location.origin.replace(/^http/, 'ws'), //'ws://localhost:3000';
             ws = new WebSocket(HOST);
-        console.clear();
+
         ws.addEventListener('open', onOpen)
         ws.addEventListener('message', onMessage)
         ws.addEventListener('close', onClose)
@@ -322,7 +306,6 @@ async function app() {
                 App.data.user = message.user;
                 builder.user = App.data.user;
                 builder.ws = ws
-                // builder.createStartView();
                 showChat();
                 break;
 
@@ -336,7 +319,6 @@ async function app() {
             case 'allmsg':
                 messages = message.messages;
                 if(message.messages.length == 0) {
-
                     chat.innerHTML = `<p class="center">Сообщений в чате пока-что нет</p>`
                 }
                 else {
@@ -368,7 +350,6 @@ async function app() {
                 App.data.user = message.user;
                 builder.user = App.data.user;
                 builder.ws = ws
-                // builder.createStartView();
                 showChat();
                 break;
             }
@@ -387,7 +368,6 @@ async function app() {
                 break;
             default:
             // Что-то
-
         }
     }
 
@@ -416,11 +396,23 @@ async function app() {
                 }
                 ws.send(JSON.stringify(data));
             }, 10000);
+
         } else {
             ws.send(JSON.stringify({
                 type: "verifyToken",
                 token: JWTtoken
             }))
+            if (window.location.search) {
+                let parametrs = new URLSearchParams(window.location.search);
+                if (parametrs.get('url') && localStorage.getItem("token")) {
+                    let data = {
+                        type: 'invite',
+                        url: parametrs.get('url'),
+                        user: JWTtoken
+                    }
+                    ws.send(JSON.stringify(data))
+                }
+            }
         }
 
     }

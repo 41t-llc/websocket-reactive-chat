@@ -288,6 +288,5 @@ export default function Watcher(config) {
                 set(observable, property, e.target.value)
             })
         })
-
     }
 }

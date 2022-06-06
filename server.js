@@ -18,9 +18,6 @@ app.get("/api/verify", (req, res) => {
     VerifingUser(req.query.token, res);
 
 })
-app.post("/api/invite", (req, res) => {
-
-})
 app.listen(PORT + 1);
 // WebSocket
 const {Server} = require('ws');
@@ -222,7 +219,7 @@ wss.on('connection', ws => {
                                     //           })
                                 } else {
                                     console.log("dont add")
-                                    SendError('error', 'Этот логин или эл.почта ужже используется')
+                                    SendError('error', 'Этот логин или эл.почта уже используется')
                                 }
                             })
 
@@ -336,7 +333,35 @@ wss.on('connection', ws => {
                     }
 
                 break;
+            case 'invite':
+                let data = ValidateToken(req.user);
+                if(data.id === ws.user.id)  {
+                    client.query(`Select id from chats where url = '${req.url}'`,(err,result) =>{
+                        if(err) throw err;
+                        if(result.rowCount) {
+                            client.query(`Select * from members where id_chat = ${result.rows[0].id} and id_user = ${ws.user.id}`,(err,result2) =>{
+                        if(err) throw err;
+                        if(!result2.rowCount) {
+                            client.query(`Insert into members (id_user,id_chat) VALUES (${ws.user.id},${result.rows[0].id})`,  (err,res) => {
+                                if(err) throw err;
+                                SendChats(ws.user.id)
+                            });
+                        }
+                        else {
+                            SendError('error','Вы уже участник этого чата');
+                        }
+                        });
 
+                        }
+                        else {
+                            SendError('error','Такого чата не существует')
+
+                        }
+
+                    })
+                }
+
+                break;
             case 'exitChat':
                 if (req.data.user === ws.user.username) {
                     if (req.data.chat_id !== '') {
