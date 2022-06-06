@@ -55,7 +55,8 @@ async function app() {
                             status: 'online'
                         }
                     ],
-                    owner: "Не выбран"
+                    owner: "Не выбран",
+                    url: 'none'
                 }
             },
             chatMessagesRender() {
@@ -188,7 +189,10 @@ async function app() {
     Object.keys(switcherForms).map(x => {
         switcherForms[x].addEventListener('click', builder.authFormSwitch);
     });
-
+    inviteCopy.onclick = function (event) {
+        event.preventDefault();
+        alert('Пришлите это вашему другу: \n' + this.href);
+    }
 
     logout.onclick = () => {
         localStorage.removeItem('token');
@@ -288,6 +292,7 @@ async function app() {
         ws.addEventListener('message', onMessage)
         ws.addEventListener('close', onClose)
         ws.addEventListener('error', onError)
+
         return ws;
     }
 
@@ -366,6 +371,9 @@ async function app() {
                 builder.currentChat = 0;
                 closeAll();
                 break;
+            case 'inviteSuccess': {
+                window.location.href = "/";
+            }
             default:
             // Что-то
         }
@@ -403,8 +411,10 @@ async function app() {
                 token: JWTtoken
             }))
             if (window.location.search) {
+
                 let parametrs = new URLSearchParams(window.location.search);
                 if (parametrs.get('url') && localStorage.getItem("token")) {
+
                     let data = {
                         type: 'invite',
                         url: parametrs.get('url'),

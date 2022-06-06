@@ -99,6 +99,7 @@ class BuilderClass {
         }
         this.chatList.map(x => {
             if (x.chat === this.chat) {
+                document.querySelector("#inviteCopy").href = location.href + "?=" + x.url;
                 window.App.data.chats.chatInfo.name = x.name;
                 window.App.data.chats.chatInfo.owner = x.owner;
             }
