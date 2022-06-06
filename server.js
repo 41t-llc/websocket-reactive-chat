@@ -165,58 +165,58 @@ wss.on('connection', ws => {
                                     }
                                     UsersForVerify[user.verifyToken] = user;
                                     console.log("User add in list");
-                                    //           transporter.sendMail({
-                                    //               from: process.env.mail,
-                                    //               to: req.email,
-                                    //               subject: "GPT VERIFY",
-                                    //               html: `
-                                    // <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-                                    //   <html lang="en">
-                                    //       <head>
-                                    //           <meta charset="UTF-8">
-                                    //           <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-                                    //           <meta http-equiv="X-UA-Compatible" content="ie=edge">
-                                    //           <title>MAIL</title>
-                                    //
-                                    //           <style>
-                                    //           * {
-                                    //               padding: 0;
-                                    //               margin: 0;
-                                    //           }
-                                    //
-                                    //           body {
-                                    //               border-radius: 20px;
-                                    //               background-color: #FFFAAF
-                                    //           }
-                                    //
-                                    //           a {
-                                    //               text-decoration: none;
-                                    //               font-size: 25px;
-                                    //           }
-                                    //           table {
-                                    //               width: 100%;
-                                    //           }
-                                    //           </style>
-                                    //       </head>
-                                    //       <body>
-                                    //       <table>
-                                    //           <tr style="min-height: 50px; background-color: #bdbbbb">
-                                    //               <td style="font-size: 40px; text-align: center">GPT GROUP</td>
-                                    //           </tr>
-                                    //           <tr>
-                                    //               <td>
-                                    //                   <span> Я люблю когда ссылки адекватны и мне нравятся
-                                    //                       <a href="http://localhost:3001/api/verify?token=${user.verifyToken}">верификация</a>
-                                    //                   </span>
-                                    //               </td>
-                                    //           </tr>
-                                    //       </table>
-                                    //       </body>
-                                    //   </html>
-                                    //   `
-                                    //           }, (err) => {
-                                    //               if(err) console.log('error');
-                                    //           })
+                                              transporter.sendMail({
+                                                  from: process.env.mail,
+                                                  to: req.email,
+                                                  subject: "GPT VERIFY",
+                                                  html: `
+                                    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+                                      <html lang="en">
+                                          <head>
+                                              <meta charset="UTF-8">
+                                              <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+                                              <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                                              <title>MAIL</title>
+
+                                              <style>
+                                              * {
+                                                  padding: 0;
+                                                  margin: 0;
+                                              }
+
+                                              body {
+                                                  border-radius: 20px;
+                                                  background-color: #FFFAAF
+                                              }
+
+                                              a {
+                                                  text-decoration: none;
+                                                  font-size: 25px;
+                                              }
+                                              table {
+                                                  width: 100%;
+                                              }
+                                              </style>
+                                          </head>
+                                          <body>
+                                          <table>
+                                              <tr style="min-height: 50px; background-color: #bdbbbb">
+                                                  <td style="font-size: 40px; text-align: center">GPT GROUP</td>
+                                              </tr>
+                                              <tr>
+                                                  <td>
+                                                      <span> Я люблю когда ссылки адекватны и мне нравятся
+                                                          <a href="http://localhost:3001/api/verify?token=${user.verifyToken}">верификация</a>
+                                                      </span>
+                                                  </td>
+                                              </tr>
+                                          </table>
+                                          </body>
+                                      </html>
+                                      `
+                                              }, (err) => {
+                                                  if(err) console.log(err);
+                                              })
                                 } else {
                                     console.log("dont add")
                                     SendError('error', 'Этот логин или эл.почта уже используется')
@@ -454,7 +454,7 @@ wss.on('connection', ws => {
 // #TODO Перед коммитом не забывайте включить ssl
 const {Client} = require('pg');
 const {json} = require("express");
-const client = new Client({
+const client = new Client({ 'postgres://sxdbjmmsesbvoy:5a2ea0bcad59ce3d78b027a9d89c7a55e465eac7b7b5e0eca02d69154862da45@ec2-54-155-99-116.eu-west-1.compute.amazonaws.com:5432/d9568fkdl83kkt'
     connectionString: process.env.DATABASE_URL || "postgres://user:password@localhost:5432/websocketapp",
     // ssl: { rejectUnauthorized: false}
 });
