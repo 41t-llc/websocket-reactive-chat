@@ -350,6 +350,10 @@ buttonSettings svg,
     bottom: 0;
     left: 0;
 }
+#inviteCopy {
+    color: var(--main-color);
+    transition: .4s;
+}
 
 .white .settings,
 .white .info,

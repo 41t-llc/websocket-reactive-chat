@@ -343,6 +343,9 @@ wss.on('connection', ws => {
                             client.query(`Insert into members (id_user,id_chat) VALUES (${ws.user.id},${result.rows[0].id})`,  (err,res) => {
                                 if(err) throw err;
                                 SendChats(ws.user.id)
+                                ws.send(JSON.stringify({
+                                    type: 'inviteSuccess'
+                                }));
                             });
                         }
                         else {
