@@ -205,9 +205,7 @@ wss.on('connection', ws => {
                                               </tr>
                                               <tr>
                                                   <td>
-                                                      <span> Я люблю когда ссылки адекватны и мне нравятся
-                                                          <a href="http://localhost:3001/api/verify?token=${user.verifyToken}">верификация</a>
-                                                      </span>
+                                                          <a href="${process.env['SERVER_URL']}/api/verify?token=${user.verifyToken}">верификация</a>
                                                   </td>
                                               </tr>
                                           </table>
