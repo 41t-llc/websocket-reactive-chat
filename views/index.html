@@ -1,80 +1,122 @@
 <html>
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>WebSocket</title>
     <link rel="stylesheet" href="/public/styles/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
-    <script src="../public/storage/badWords.js"> </script>
-    <script src="../public/storage/testsWords.js"> </script>
-  </head>
-  <body class="grid grid-row-3 gap-15">
-  <section class="chats grid grid-row-2 d-n gap-30" id="chats">
-    <h3 class="m-a fz-0.5">Активные пользователи</h3>
-    <article class="flex flex-dir-col gap-15" id="users">
-
+    <script src="../public/storage/badWords.js"></script>
+</head>
+<body class="grid">
+<section id="chatsList" class="flex flex-dir-col d-n gap-15 relative">
+    <article class="center">
+        <h2>Ваши чаты</h2>
     </article>
-  </section>
-    <article id="condition" class="grid grid-col-4">
-      <button class="center" id="menu">
-        <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 32 32">
-          <title>Меню</title>
-          <path d="M5.333 22.667h21.333v-2.667h-21.333v2.667zM5.333 17.333h21.333v-2.667h-21.333v2.667zM5.333 9.333v2.667h21.333v-2.667h-21.333z"></path>
+    <p class="center" id="no-chats">У вас нет чатов</p>
+    <button id="addChatButton" class="absolute center p">Добавить чат</button>
+</section>
+<article id="condition" class="grid grid-col-4 d-n">
+    <button class="center" id="menu">
+        <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+            <title>Меню</title>
+            <path d="M5.333 22.667h21.333v-2.667h-21.333v2.667zM5.333 17.333h21.333v-2.667h-21.333v2.667zM5.333 9.333v2.667h21.333v-2.667h-21.333z"></path>
         </svg>
-      </button>
-      <span id="indicator" class="error"></span>
-      <p id="sysmes"> Соединение....</p>
-      <button class="center" id="buttonSettings" onclick = "toogleSettings()" >
-
-        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="38" height="40"><title>Настройки</title><g data-name="1" id="_1"><path d="M293.9,450H233.53a15,15,0,0,1-14.92-13.42l-4.47-42.09a152.77,152.77,0,0,1-18.25-7.56L163,413.53a15,15,0,0,1-20-1.06l-42.69-42.69a15,15,0,0,1-1.06-20l26.61-32.93a152.15,152.15,0,0,1-7.57-18.25L76.13,294.1a15,15,0,0,1-13.42-14.91V218.81A15,15,0,0,1,76.13,203.9l42.09-4.47a152.15,152.15,0,0,1,7.57-18.25L99.18,148.25a15,15,0,0,1,1.06-20l42.69-42.69a15,15,0,0,1,20-1.06l32.93,26.6a152.77,152.77,0,0,1,18.25-7.56l4.47-42.09A15,15,0,0,1,233.53,48H293.9a15,15,0,0,1,14.92,13.42l4.46,42.09a152.91,152.91,0,0,1,18.26,7.56l32.92-26.6a15,15,0,0,1,20,1.06l42.69,42.69a15,15,0,0,1,1.06,20l-26.61,32.93a153.8,153.8,0,0,1,7.57,18.25l42.09,4.47a15,15,0,0,1,13.41,14.91v60.38A15,15,0,0,1,451.3,294.1l-42.09,4.47a153.8,153.8,0,0,1-7.57,18.25l26.61,32.93a15,15,0,0,1-1.06,20L384.5,412.47a15,15,0,0,1-20,1.06l-32.92-26.6a152.91,152.91,0,0,1-18.26,7.56l-4.46,42.09A15,15,0,0,1,293.9,450ZM247,420h33.39l4.09-38.56a15,15,0,0,1,11.06-12.91A123,123,0,0,0,325.7,356a15,15,0,0,1,17,1.31l30.16,24.37,23.61-23.61L372.06,328a15,15,0,0,1-1.31-17,122.63,122.63,0,0,0,12.49-30.14,15,15,0,0,1,12.92-11.06l38.55-4.1V232.31l-38.55-4.1a15,15,0,0,1-12.92-11.06A122.63,122.63,0,0,0,370.75,187a15,15,0,0,1,1.31-17l24.37-30.16-23.61-23.61-30.16,24.37a15,15,0,0,1-17,1.31,123,123,0,0,0-30.14-12.49,15,15,0,0,1-11.06-12.91L280.41,78H247l-4.09,38.56a15,15,0,0,1-11.07,12.91A122.79,122.79,0,0,0,201.73,142a15,15,0,0,1-17-1.31L154.6,116.28,131,139.89l24.38,30.16a15,15,0,0,1,1.3,17,123.41,123.41,0,0,0-12.49,30.14,15,15,0,0,1-12.91,11.06l-38.56,4.1v33.38l38.56,4.1a15,15,0,0,1,12.91,11.06A123.41,123.41,0,0,0,156.67,311a15,15,0,0,1-1.3,17L131,358.11l23.61,23.61,30.17-24.37a15,15,0,0,1,17-1.31,122.79,122.79,0,0,0,30.13,12.49,15,15,0,0,1,11.07,12.91ZM449.71,279.19h0Z"/><path d="M263.71,340.36A91.36,91.36,0,1,1,355.08,249,91.46,91.46,0,0,1,263.71,340.36Zm0-152.72A61.36,61.36,0,1,0,325.08,249,61.43,61.43,0,0,0,263.71,187.64Z"/></g></svg>
-      </button>
-
+    </button>
+    <span id="indicator" class="error"></span>
+    <p id="sysmes"> Соединение....</p>
+    <article class="flex gap-15">
+        <button class="center d-n" id="buttonInfo">
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" width="38" height="40">
+                <path d="M16,12a2,2,0,1,1,2-2A2,2,0,0,1,16,12Zm0-2Z"/>
+                <path d="M16,29A13,13,0,1,1,29,16,13,13,0,0,1,16,29ZM16,5A11,11,0,1,0,27,16,11,11,0,0,0,16,5Z"/>
+                <path d="M16,24a2,2,0,0,1-2-2V16a2,2,0,0,1,4,0v6A2,2,0,0,1,16,24Zm0-8v0Z"/>
+            </svg>
+        </button>
+        <button class="center" id="buttonSettings" onclick="toogleSettings()">
+            <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="38" height="40"><title>
+                Настройки</title>
+                <g data-name="1" id="_1">
+                    <path d="M293.9,450H233.53a15,15,0,0,1-14.92-13.42l-4.47-42.09a152.77,152.77,0,0,1-18.25-7.56L163,413.53a15,15,0,0,1-20-1.06l-42.69-42.69a15,15,0,0,1-1.06-20l26.61-32.93a152.15,152.15,0,0,1-7.57-18.25L76.13,294.1a15,15,0,0,1-13.42-14.91V218.81A15,15,0,0,1,76.13,203.9l42.09-4.47a152.15,152.15,0,0,1,7.57-18.25L99.18,148.25a15,15,0,0,1,1.06-20l42.69-42.69a15,15,0,0,1,20-1.06l32.93,26.6a152.77,152.77,0,0,1,18.25-7.56l4.47-42.09A15,15,0,0,1,233.53,48H293.9a15,15,0,0,1,14.92,13.42l4.46,42.09a152.91,152.91,0,0,1,18.26,7.56l32.92-26.6a15,15,0,0,1,20,1.06l42.69,42.69a15,15,0,0,1,1.06,20l-26.61,32.93a153.8,153.8,0,0,1,7.57,18.25l42.09,4.47a15,15,0,0,1,13.41,14.91v60.38A15,15,0,0,1,451.3,294.1l-42.09,4.47a153.8,153.8,0,0,1-7.57,18.25l26.61,32.93a15,15,0,0,1-1.06,20L384.5,412.47a15,15,0,0,1-20,1.06l-32.92-26.6a152.91,152.91,0,0,1-18.26,7.56l-4.46,42.09A15,15,0,0,1,293.9,450ZM247,420h33.39l4.09-38.56a15,15,0,0,1,11.06-12.91A123,123,0,0,0,325.7,356a15,15,0,0,1,17,1.31l30.16,24.37,23.61-23.61L372.06,328a15,15,0,0,1-1.31-17,122.63,122.63,0,0,0,12.49-30.14,15,15,0,0,1,12.92-11.06l38.55-4.1V232.31l-38.55-4.1a15,15,0,0,1-12.92-11.06A122.63,122.63,0,0,0,370.75,187a15,15,0,0,1,1.31-17l24.37-30.16-23.61-23.61-30.16,24.37a15,15,0,0,1-17,1.31,123,123,0,0,0-30.14-12.49,15,15,0,0,1-11.06-12.91L280.41,78H247l-4.09,38.56a15,15,0,0,1-11.07,12.91A122.79,122.79,0,0,0,201.73,142a15,15,0,0,1-17-1.31L154.6,116.28,131,139.89l24.38,30.16a15,15,0,0,1,1.3,17,123.41,123.41,0,0,0-12.49,30.14,15,15,0,0,1-12.91,11.06l-38.56,4.1v33.38l38.56,4.1a15,15,0,0,1,12.91,11.06A123.41,123.41,0,0,0,156.67,311a15,15,0,0,1-1.3,17L131,358.11l23.61,23.61,30.17-24.37a15,15,0,0,1,17-1.31,122.79,122.79,0,0,0,30.13,12.49,15,15,0,0,1,11.07,12.91ZM449.71,279.19h0Z"/>
+                    <path d="M263.71,340.36A91.36,91.36,0,1,1,355.08,249,91.46,91.46,0,0,1,263.71,340.36Zm0-152.72A61.36,61.36,0,1,0,325.08,249,61.43,61.43,0,0,0,263.71,187.64Z"/>
+                </g>
+            </svg>
+        </button>
     </article>
-
-    <section id="chat" class="p m"></section>
-
-    <form name="message" class="grid grid-col-2 gap p">
-      <input name="text" placeholder="Message" class="p" autocomplete="off">
-      <button>
+</article>
+<section id="chat" class="p m" data-block="chatMessagesRender">
+</section>
+<form name="message" class="grid grid-col-2 gap p">
+    <input name="text" placeholder="Message" class="p" autocomplete="off">
+    <button>
         <svg width="21" height="18" viewBox="0 0 21 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M1.89095 17.7007C2.06755 17.8394 2.30689 17.8666 2.51022 17.7721L20.4645 9.45245C20.8839 9.25745 20.8839 8.57033 20.4645 8.37533L2.51022 0.055695C2.30689 -0.0389112 2.06755 -0.0116148 1.89095 0.127085C1.71495 0.264637 1.63417 0.492119 1.67541 0.710886L2.66417 5.64938L10.8148 8.35037C11.3004 8.51169 11.3004 9.31604 10.8148 9.47737L2.66417 12.1784L1.67541 17.1169C1.63139 17.3273 1.71003 17.5584 1.89095 17.7007Z" fill="white"/>
-          <path d="M0.474053 8.91393C0.474053 9.06598 0.532152 9.21804 0.648351 9.33407L2.34751 11.0315L8.74548 8.91393L2.34747 6.79639L0.648312 8.49379C0.532153 8.60983 0.474053 8.76188 0.474053 8.91393Z" fill="white"/>
+            <path d="M1.89095 17.7007C2.06755 17.8394 2.30689 17.8666 2.51022 17.7721L20.4645 9.45245C20.8839 9.25745 20.8839 8.57033 20.4645 8.37533L2.51022 0.055695C2.30689 -0.0389112 2.06755 -0.0116148 1.89095 0.127085C1.71495 0.264637 1.63417 0.492119 1.67541 0.710886L2.66417 5.64938L10.8148 8.35037C11.3004 8.51169 11.3004 9.31604 10.8148 9.47737L2.66417 12.1784L1.67541 17.1169C1.63139 17.3273 1.71003 17.5584 1.89095 17.7007Z"
+                  fill="white"/>
+            <path d="M0.474053 8.91393C0.474053 9.06598 0.532152 9.21804 0.648351 9.33407L2.34751 11.0315L8.74548 8.91393L2.34747 6.79639L0.648312 8.49379C0.532153 8.60983 0.474053 8.76188 0.474053 8.91393Z"
+                  fill="white"/>
         </svg>
-      </button>
-    </form>
-
-  <article class="signin flex ai-c jc-c flex-dir-col">
+    </button>
+</form>
+<article class="signin flex ai-c jc-c flex-dir-col">
     <form name="signin" class="grid gap">
-      <input type="text" class="p" name="login" autocomplete="off" placeholder="Login">
-      <input type="password" class="p" name="password" autocomplete="off" placeholder="Password">
-      <button class="p">Sign in</button>
+        <input type="text" class="p" name="login" autocomplete="off" placeholder="Login">
+        <input type="password" class="p" name="password" autocomplete="off" placeholder="Password">
+        <button class="p">Sign in</button>
     </form>
-    <button onclick="authFormSwitch();" class="m">Sign up</button>
-  </article>
-
-  <article class="signup d-n ai-c jc-c flex-dir-col">
+    <button class="m formSwitch">Sign up</button>
+</article>
+<article class="signup d-n ai-c jc-c flex-dir-col">
     <form name="signup" class="grid gap">
-      <input type="text" name="username" class="p" autocomplete="off" placeholder="Username">
-      <input type="text" name="login" class="p" autocomplete="off" placeholder="Login">
-      <input type="password" name="password" class="p" autocomplete="off" placeholder="Password">
-      <button class="p">Sign up</button>
+        <input type="text" name="username" class="p" autocomplete="off" placeholder="Username" value="test">
+        <input type="text" name="login" class="p" autocomplete="off" placeholder="Login" value="test">
+        <input type="email" name="email" class="p" autocomplete="off" placeholder="@E-mail" value="jlactuk1@gmail.com">
+        <input type="password" name="password" class="p" autocomplete="off" placeholder="Password" value="123">
+        <input type="password" name="confirmPassword" class="p" autocomplete="off" placeholder="Confirm password"
+               value="123">
+        <button class="p">Sign up</button>
     </form>
-    <button onclick="authFormSwitch();" class="m">Sign in</button>
-  </article>
-    <section class="settings grid gap-30 flex-column" style="display: none">
-      <h2 class="ta-c">Настройки</h2>
-      <article class="settings_checkbox grid gap-15">
-        <input type="checkbox"  id="censored" >
-        <label for="censored"><span class="slider round"></span> <span>Цензура слов</span></label>
-        <input type="checkbox"  id="ThemeSwitch" >
-        <label for="ThemeSwitch"><span class="slider round"></span> <span>Изменение темы</span></label>
+    <button class="formSwitch m">Sign in</button>
+</article>
+<section class="absolute blockSettings full-screen" style="display: none">
+    <section class="settings grid gap-30 flex-column">
+        <h2 class="ta-c">Настройки</h2>
+        <article class="settings_checkbox grid gap-15">
+            <input type="checkbox" id="censored">
+            <label for="censored"><span class="slider round"></span> <span>Цензура слов</span></label>
+            <input type="checkbox" id="ThemeSwitch">
+            <label for="ThemeSwitch"><span class="slider round"></span> <span>Изменение темы</span></label>
+            <button id="logout">Выйти</button>
         </article>
-      </article>
+        </article>
     </section>
-<!--    <script src="/public/storage/badWords.js" type="text/js"></script>-->
-
-    <script  src="/public/scripts/script.js"></script>
-
-  </body>
+</section>
+<section class="absolute infoBlock full-screen grid d-n" id="info">
+    <section class="grid gap-30 info">
+        <h2 class="ta-c">Информация</h2>
+        <p><span>Название чата:</span> <span data-text="chats.chatInfo.name"></span></p>
+        <p>Владелец чата: <span data-text="chats.chatInfo.owner"></span></p>
+        <article class="grid" data-block-append="chatButtons">
+        </article>
+        <h3 class="m-a fz-0.5">Активные пользователи</h3>
+        <article class="flex flex-dir-col gap-15" data-block="chats.chatInfo.activeUsers">
+            <p data-item="name"></p>
+        </article>
+    </section>
+</section>
+<section class="grid addChat absolute full-screen d-n">
+    <section class="grid gap-30">
+        <h3 class="center ">Добавить чат</h3>
+        <input type="checkbox" hidden id="toggleUrl">
+        <form action="#" class="grid gap-15 jc-c" name="addChat">
+            <input type="text" class="p" placeholder="Название чата" name="name">
+            <label for="toggleUrl">Создать свою ссылку</label>
+            <input type="text" class="p" placeholder="Ссылка" name="url" id="url">
+            <button class="p">Добавить</button>
+        </form>
+    </section>
+</section>
+</section>
+<article class="absolute full-screen d-n" id="closeAll"></article>
+<script src="/public/scripts/script.js" type="module"></script>
+</body>
 </html>
