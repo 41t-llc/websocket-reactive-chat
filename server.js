@@ -472,7 +472,7 @@ const {Client} = require('pg');
 const {json} = require("express");
 const client = new Client({
     connectionString: process.env.DATABASE_URL || "postgres://user:password@localhost:5432/websocketapp",
-    // ssl: { rejectUnauthorized: false}
+    ssl: { rejectUnauthorized: false}
 });
 
 client.connect();
