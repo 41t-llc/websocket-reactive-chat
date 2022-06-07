@@ -166,7 +166,7 @@ wss.on('connection', ws => {
                                         }, 1800000)
                                     }
                                     UsersForVerify[user.verifyToken] = user;
-                                    console.log(user.verifyToken)
+                                    console.log(`<a href="${process.env['SERVER_URL']}?verifyToken=${user.verifyToken}">верификация</a>`)
                                     console.log("User add in list");
                                               transporter.sendMail({
                                                   from: process.env.mail,
@@ -216,7 +216,7 @@ wss.on('connection', ws => {
                                       </html>
                                       `
                                               }, (err) => {
-                                                  if(err) console.log('---');
+                                                  if(err) console.log(err);
                                               })
                                 } else {
                                     console.log("dont add")
@@ -413,7 +413,7 @@ wss.on('connection', ws => {
         }
     });
     ws.on('close', () => {
-        console.log('Client disconnected' + id)
+        console.log('Client disconnected')
         if (id) {
             delete clients[id];
             delete clientsUserNames[id];
@@ -520,7 +520,6 @@ function CheckEmail(email) {
 
     for (let x in UsersForVerify) {
         let y = UsersForVerify[x];
-        console.log(UsersForVerify)
         if (y.data['email'] === email) {
             return false;
         }
