@@ -12,17 +12,19 @@ const server = express()
     .use("/", (req, res) => res.sendFile(INDEX, {root: __dirname}))
     .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-// app
-const app = express();
-app.get("/api/verify", (req, res) => {
-    VerifingUser(req.query.token, res);
-
-})
-app.listen(PORT + 1);
 // WebSocket
 const {Server} = require('ws');
-const wss = new Server({server});
+const wss = new Server({noServer: true});
 // Transporter
+
+
+
+server.on('upgrade', (request, socket, head) => {
+    wss.handleUpgrade(request, socket, head, socket => {
+        wss.emit('connection', socket, request);
+    });
+});
+
 const transporter = nodeMailer.createTransport({
     host: "smtp.mail.ru",
     port: 465,
@@ -164,6 +166,7 @@ wss.on('connection', ws => {
                                         }, 1800000)
                                     }
                                     UsersForVerify[user.verifyToken] = user;
+                                    console.log(user.verifyToken)
                                     console.log("User add in list");
                                               transporter.sendMail({
                                                   from: process.env.mail,
@@ -205,7 +208,7 @@ wss.on('connection', ws => {
                                               </tr>
                                               <tr>
                                                   <td>
-                                                          <a href="${process.env['SERVER_URL']}/api/verify?token=${user.verifyToken}">верификация</a>
+                                                          <a href="${process.env['SERVER_URL']}?verifyToken=${user.verifyToken}">верификация</a>
                                                   </td>
                                               </tr>
                                           </table>
@@ -213,7 +216,7 @@ wss.on('connection', ws => {
                                       </html>
                                       `
                                               }, (err) => {
-                                                  if(err) console.log(err);
+                                                  if(err) console.log('---');
                                               })
                                 } else {
                                     console.log("dont add")
@@ -225,6 +228,18 @@ wss.on('connection', ws => {
                     })
 
 
+                }
+                break;
+            case 'verifyInviteToken':
+
+                if(VerifingUser(req.token)) {
+                    ws.send(JSON.stringify({
+                        type: 'successVerify',
+                        message: 'Пользователь подтвержден'
+                    }))
+                }
+                else {
+                    SendError('error','Токен не валиден');
                 }
                 break;
             case 'verifyToken':
@@ -462,25 +477,24 @@ const client = new Client({
 
 client.connect();
 
-function VerifingUser(token, res) {
+function VerifingUser(token) {
     let user = UsersForVerify[token] || false,
         check = false;
     if (user) {
-        res.redirect("http://localhost:3000");
         client.query(`
                     INSERT INTO users(username, login, password, email)
                     VALUES ('${user.data.username}', '${user.data.login}', '${user.data.password}', '${user.data.email}')`,
             (err, result) => {
                 if (err) throw err;
-
                 if (!result.rowCount) check = true;
             }
         );
-        console.log("I send " + check);
+       check = true;
     } else {
-        res.redirect("/?errors=notoken");
+       check = false;
     }
-    return check;
+
+    return check
 }
 
 function GenerateToken() {
