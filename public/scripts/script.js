@@ -358,8 +358,8 @@ async function app() {
                 showChat();
                 break;
             }
-            case 'noValidToken': {
-                alert("Ваш токен истек или его данные устарели");
+            case 'successVerify': {
+                window.location.href = '/';
                 break;
             }
             case 'chats':
@@ -383,21 +383,16 @@ async function app() {
         indicator.classList.add('error');
         indicator.classList.remove('success');
         sysmes.innerHTML = `<b>Система:</b>ошибка ${event.message}`;
-        connectionTries = setInterval(() => {
-            if (ws.readyState === 1) {
-                clearInterval(connectionTries);
-            } else {
-                ws.close();
-                ws = connect();
-            }
-        }, 5000);
+        ws = connect();
     }
 
     function onOpen(event) {
         indicator.classList.add('success');
         indicator.classList.remove('error');
         sysmes.innerHTML = 'Соединение установлено';
-        if (!JWTtoken) {
+
+        if (JWTtoken) {
+
             d = setInterval(() => {
                 let data = {
                     type: "Check"
@@ -410,9 +405,11 @@ async function app() {
                 type: "verifyToken",
                 token: JWTtoken
             }))
+
             if (window.location.search) {
 
                 let parametrs = new URLSearchParams(window.location.search);
+
                 if (parametrs.get('url') && localStorage.getItem("token")) {
 
                     let data = {
@@ -422,9 +419,17 @@ async function app() {
                     }
                     ws.send(JSON.stringify(data))
                 }
-            }
-        }
+                if (parametrs.get('verifyToken')) {
 
+                    let data = {
+                        type: 'verifyInviteToken',
+                        token: parametrs.get('verifyToken'),
+                    }
+                    ws.send(JSON.stringify(data))
+                }
+            }
+
+        }
     }
 
     function onClose(event) {
